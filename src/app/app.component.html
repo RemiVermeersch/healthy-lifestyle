@@ -1,0 +1,14 @@
+<div fullpage id="fullpage" [options]="config" (ref)="getRef($event)">
+  <div class="section">Healthcare</div>
+	<div class="section" (click)="fullpage_api.moveSectionDown()"> <!-- Click example-->
+    <div class="slide">Lifestyle</div>
+		<div class="slide">Lifestyle 2</div>
+		<div class="slide">Lifestyle 3</div>
+  </div>
+	<div class="section">
+    Economy
+	</div>
+	<div class="section">
+      <app-environment-energy></app-environment-energy>
+  </div>
+</div>

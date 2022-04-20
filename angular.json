@@ -33,7 +33,9 @@
             "styles": [
               "src/styles.less"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/fullpage.scrollHorizontally.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -101,7 +103,9 @@
             "styles": [
               "src/styles.less"
             ],
-            "scripts": []
+            "scripts": [  
+              "src/assets/fullpage.scrollHorizontally.min.js"
+            ]
           }
         }
       }

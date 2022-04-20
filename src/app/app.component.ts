@@ -20,6 +20,9 @@ export class AppComponent {
       // fullpage options
       licenseKey: 'YOUR LICENSE KEY HERE',
       anchors: ['firstPage', 'secondPage', 'thirdPage', 'fourthPage', 'lastPage'],
+      sectionsColor: ['yellow', 'orange', '#C0C0C0', '#ADD8E6'],
+      scrollHorizontally:true,
+      verticalCentered: false,
       menu: '#menu',
 
       // fullpage callbacks
@@ -31,7 +34,7 @@ export class AppComponent {
       }
     };
   }
-  
+
   getRef(fullPageRef: any) {
     this.fullpage_api = fullPageRef;
   }
