@@ -34,7 +34,6 @@
               "src/styles.less"
             ],
             "scripts": [
-              "src/assets/fullpage.scrollHorizontally.min.js"
             ]
           },
           "configurations": {
@@ -104,7 +103,6 @@
               "src/styles.less"
             ],
             "scripts": [  
-              "src/assets/fullpage.scrollHorizontally.min.js"
             ]
           }
         }
