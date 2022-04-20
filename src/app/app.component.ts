@@ -18,21 +18,40 @@ export class AppComponent {
     this.config = {
 
       // fullpage options
-      licenseKey: 'YOUR LICENSE KEY HERE',
-      anchors: ['firstPage', 'secondPage', 'thirdPage', 'fourthPage', 'lastPage'],
-      sectionsColor: ['yellow', 'orange', '#C0C0C0', '#ADD8E6'],
-      scrollHorizontally:true,
+      anchors: ['firstPage', 'secondPage', 'EconomyAndFinance', 'fourthPage', 'lastPage'],
+      sectionsColor: ['yellow', 'orange', '#C3E9C0', '#ADD8E6'],
+      scrollHorizontally: true,
       verticalCentered: false,
-      menu: '#menu',
+      loopHorizontal: false,
+      continuousHorizontal: false,
+      controlArrowsHTML: [
+        '<i class="fa-solid fa-angle-left"></i>', 
+        '<i class="fa-solid fa-angle-right"></i>'
+      ],
 
       // fullpage callbacks
       afterResize: () => {
         console.log("After resize");
       },
       afterLoad: (origin: { index: any; }, destination: any, direction: any) => {
-        console.log(origin.index);
+        let arrow_left:HTMLCollectionOf<Element> = document.getElementsByClassName("fp-controlArrow fp-prev");
+        Array.from(arrow_left).forEach(it => {
+          it.innerHTML = `<i class="fa-solid fa-angle-left"></i>`;
+        })
+
+        const arrow_right = document.getElementsByClassName("fp-controlArrow fp-next");
+        Array.from(arrow_right).forEach(it => {
+          it.innerHTML = `<i class="fa-solid fa-angle-right"></i>`;
+        })
+      },
+      afterRender: () => {
+        
       }
     };
+  }
+
+  ngAfterViewInit(){
+
   }
 
   getRef(fullPageRef: any) {
