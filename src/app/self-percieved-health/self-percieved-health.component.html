@@ -1,5 +1,7 @@
 <div class="container">
     <h1>Self-perseived health</h1>
-    <div id="chart"></div>
-    <button id="basic" type="button" mat-button (click)="btnClick()">Basic button</button>
+    <div class="card">
+        <div id="chart"></div>
+        <ngx-slider [(value)]="value" [options]="options" (userChange)="age_changed()"></ngx-slider>
+    </div>
 </div>
