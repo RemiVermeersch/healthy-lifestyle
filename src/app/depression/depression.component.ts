@@ -16,7 +16,7 @@ export class DepressionComponent implements OnInit {
 
   ages = ["Y15-24", "Y25-34", "Y35-44", "Y45-54", "Y55-64", "Y65-74", "Y_GE75"]
   ages_nl = ["15-24", "25-34", "35-44", "45-54", "55-64", "65-74", ">=75"]
-  dipl_nl = ["primary", "secondary", "tertiary"]
+  dipl_nl = ["primair", "secundair", "tertiair"]
 
   nodes;
   ngOnInit(): void {
@@ -105,7 +105,7 @@ export class DepressionComponent implements OnInit {
 
     let string_age = this.ages_nl[this.ages.indexOf(age)]
 
-    let title = "per educatie niveau voor de leeftijd tussen " + string_age
+    let title = "per educatieniveau voor de leeftijd tussen " + string_age
     this.radarChart("#diploma_chart", diploma_data, radarChartOptions, this.dipl_nl, title)
   }
 
@@ -176,10 +176,10 @@ export class DepressionComponent implements OnInit {
     let color = ["#FFA500", "#96D6F7"]
 
     // Handmade legend
-    svg.append("circle").attr("cx",100).attr("cy",50).attr("r", 6).style("fill", color[0])
-    svg.append("circle").attr("cx",100).attr("cy",80).attr("r", 6).style("fill", color[1])
-    svg.append("text").attr("x", 120).attr("y", 55).text("Vrouw").style("font-size", "15px").attr("alignment-baseline","middle")
-    svg.append("text").attr("x", 120).attr("y", 85).text("Man").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("circle").attr("cx",80).attr("cy",50).attr("r", 6).style("fill", color[0])
+    svg.append("circle").attr("cx",80).attr("cy",80).attr("r", 6).style("fill", color[1])
+    svg.append("text").attr("x", 100).attr("y", 55).text("Vrouw").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("text").attr("x", 100).attr("y", 85).text("Man").style("font-size", "15px").attr("alignment-baseline","middle")
 
     svg.append("text")
       .attr("x", 300)
@@ -235,7 +235,7 @@ export class DepressionComponent implements OnInit {
       .attr("x", 4)
       .attr("y", function(d){return -d*radius/cfg.levels;})
       .attr("dy", "0.4em")
-      .style("font-size", "10px")
+      .style("font-size", function(d, i) {return (d!=5)? "10px" : "20px"})
       .attr("fill", "#737373")
       .text(function(d,i) { return Format(maxValue * d/cfg.levels * 0.01); });
 
@@ -269,7 +269,7 @@ export class DepressionComponent implements OnInit {
     //Append the labels at each axis
     axis.append("text")
       .attr("class", "legend")
-      .style("font-size", "11px")
+      .style("font-size", "16px")
       .attr("text-anchor", "middle")
       .attr("dy", "0.35em")
       .attr("x", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice*i - Math.PI/2); })
@@ -281,14 +281,14 @@ export class DepressionComponent implements OnInit {
         return d3.select(this)
           .transition()
           .duration(200)
-          .style('font-size', "20px");
+          .style('font-size', "25px");
       })
       .on('mouseout', function(){
         //Bring back all blobs
         d3.select(this)
           .transition()
           .duration(200)
-          .style('font-size', "11px")
+          .style('font-size', "16px")
       }).on("click", function(d, i) {
         if (i != "Y15-24") {
           _this.show_new_figure(i)
