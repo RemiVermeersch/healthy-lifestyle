@@ -30,7 +30,7 @@ export class DepressionComponent implements OnInit {
   show_new_figure(age) {
     d3.csv("/assets/depression/depression_be.csv").then( (data) => {
       let dipl_data = this.parse_diploma_data(data, age)
-      this.generate_diploma_spider(dipl_data)
+      this.generate_diploma_spider(dipl_data, age)
     })
   }
 
@@ -67,8 +67,8 @@ export class DepressionComponent implements OnInit {
   }
 
   generate_spider(age_data) {
-    let margin = {top: 100, right: 100, bottom: 100, left: 100}
-    let width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right
+    let margin = {top: 100, right: 100, bottom: 200, left: 100}
+    let width = Math.min(window.innerWidth/3, window.innerWidth - 10) - margin.left - margin.right
     let height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 
     let color = d3.scaleOrdinal().range(["#FFA500", "#96D6F7"])
@@ -82,12 +82,13 @@ export class DepressionComponent implements OnInit {
       roundStrokes: true,
       color: color
     }
-    this.radarChart("#age_chart", age_data, radarChartOptions, this.ages_nl)
+    let title = "Aantal mensen met depressieve symptomen per leeftijd"
+    this.radarChart("#age_chart", age_data, radarChartOptions, this.ages_nl, title)
   }
 
-  generate_diploma_spider(diploma_data) {
-    let margin = {top: 100, right: 100, bottom: 100, left: 100}
-    let width = Math.min(500, window.innerWidth - 10) - margin.left - margin.right
+  generate_diploma_spider(diploma_data, age) {
+    let margin = {top: 100, right: 100, bottom: 100, left: 50}
+    let width = Math.min(window.innerWidth/3, window.innerWidth - 10) - margin.left - margin.right
     let height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 
     let color = d3.scaleOrdinal().range(["#FFA500", "#96D6F7"])
@@ -102,10 +103,13 @@ export class DepressionComponent implements OnInit {
       color: color
     }
 
-    this.radarChart("#diploma_chart", diploma_data, radarChartOptions, this.dipl_nl)
+    let string_age = this.ages_nl[this.ages.indexOf(age)]
+
+    let title = "Aantal mensen met depressieve symptomen \n per educatie niveau voor de leeftijd" + string_age
+    this.radarChart("#diploma_chart", diploma_data, radarChartOptions, this.dipl_nl, title)
   }
 
-  radarChart(id, data, options, axes_labels) {
+  radarChart(id, data, options, axes_labels, title) {
     let cfg = {
       w: 600,				//Width of the circle
       h: 600,				//Height of the circle
@@ -176,6 +180,13 @@ export class DepressionComponent implements OnInit {
     svg.append("circle").attr("cx",100).attr("cy",80).attr("r", 6).style("fill", color[1])
     svg.append("text").attr("x", 120).attr("y", 55).text("Vrouw").style("font-size", "15px").attr("alignment-baseline","middle")
     svg.append("text").attr("x", 120).attr("y", 85).text("Man").style("font-size", "15px").attr("alignment-baseline","middle")
+
+    svg.append("text")
+      .attr("x", 350)
+      .attr("y", 680)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .text(title);
 
     /////////////////////////////////////////////////////////
     ////////// Glow filter for some extra pizzazz ///////////
@@ -270,7 +281,9 @@ export class DepressionComponent implements OnInit {
           .duration(200)
           .style('font-size', "11px")
       }).on("click", function(d, i) {
-        _this.show_new_figure(i)
+        if (i != "Y15-24") {
+          _this.show_new_figure(i)
+        }
     });
 
     /////////////////////////////////////////////////////////
