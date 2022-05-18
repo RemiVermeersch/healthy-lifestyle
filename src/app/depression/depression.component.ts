@@ -16,6 +16,7 @@ export class DepressionComponent implements OnInit {
 
   ages = ["Y15-24", "Y25-34", "Y35-44", "Y45-54", "Y55-64", "Y65-74", "Y_GE75"]
   ages_nl = ["15-24", "25-34", "35-44", "45-54", "55-64", "65-74", ">=75"]
+  dipl_nl = ["primary", "secondary", "tertiary"]
 
   nodes;
   ngOnInit(): void {
@@ -23,7 +24,8 @@ export class DepressionComponent implements OnInit {
     d3.csv("/assets/depression/depression_be.csv").then( (data) => {
       this.age_data = this.parse_age_data(data)
       this.generate_spider(this.age_data)
-
+      let dipl_data = this.parse_diploma_data(data, this.ages[1])
+      this.generate_diploma_spider(dipl_data)
     })
   }
 
@@ -33,37 +35,33 @@ export class DepressionComponent implements OnInit {
     let data_filter_columns = data_total_ed.map(function(d) {
       return {
         sex: d.sex,
-        age: d['age'],
-        value: d['OBS_VALUE']
+        axis: d['age'],
+        v: d['OBS_VALUE']
       }
     })
-    return d3.group(data_filter_columns, d => d['sex'])
+    let age_data =  d3.group(data_filter_columns, d => d['sex'])
+    age_data.get("F").map(o => delete o['sex'])
+    age_data.get("M").map(o => delete o['sex'])
+    return [age_data.get("F"), age_data.get("M")]
+  }
+
+  parse_diploma_data(data, age) {
+    let dipl = ["ED0-2", "ED3_4", "ED5-8"]
+    let dipl_for_age = data.filter(function(d, i) { return d.isced11 != "TOTAL" && d.age == age})
+    let data_filter_columns = dipl_for_age.map(function(d) {
+      return {
+        sex: d.sex,
+        axis: d['isced11'],
+        v: d['OBS_VALUE']
+      }
+    })
+    let grouped = d3.group(data_filter_columns, d => d['sex'])
+    grouped.get("F").map(o => delete o['sex'])
+    grouped.get("M").map(o => delete o['sex'])
+    return [grouped.get("F"), grouped.get("M")]
   }
 
   generate_spider(age_data) {
-    let data_array = [age_data.get("F"), age_data.get("M")]
-
-    let hc_data = [
-      [ // Women
-        { axis: "Y15-24", v: "9.6" },
-        { axis: "Y25-34", v: "9.4" },
-      { axis: "Y35-44", v: "10.2" },
-      { axis: "Y45-54", v: "13" },
-      { axis: "Y55-64", v: "10.1" },
-      { axis: "Y65-74", v: "8.7" },
-      { axis: "Y_GE75", v: "5.9" }
-      ],
-      [ //Men
-        { axis: "Y15-24", v: "5.7" },
-      { axis: "Y25-34", v: "5.9" },
-      { axis: "Y35-44", v: "10.2" },
-      { axis: "Y45-54", v: "6.8" },
-      { axis: "Y55-64", v: "9.4" },
-      { axis: "Y65-74", v: "3.9" },
-      { axis: "Y_GE75", v: "6.4" }
-      ]
-      ]
-
     let margin = {top: 100, right: 100, bottom: 100, left: 100}
     let width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right
     let height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
@@ -79,10 +77,29 @@ export class DepressionComponent implements OnInit {
       roundStrokes: true,
       color: color
     }
-    this.radarChart(".radarChart", hc_data, radarChartOptions)
+    this.radarChart(".radarChart", age_data, radarChartOptions, this.ages_nl)
   }
 
-  radarChart(id, data, options) {
+  generate_diploma_spider(diploma_data) {
+    let margin = {top: 100, right: 100, bottom: 100, left: 100}
+    let width = Math.min(500, window.innerWidth - 10) - margin.left - margin.right
+    let height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+
+    let color = d3.scaleOrdinal().range(["#FFA500", "#96D6F7"])
+
+    let radarChartOptions = {
+      w: width,
+      h: height,
+      margin: margin,
+      maxValue: 0.5,
+      levels: 5,
+      roundStrokes: true,
+      color: color
+    }
+    this.radarChart(".radarChart", diploma_data, radarChartOptions, this.dipl_nl)
+  }
+
+  radarChart(id, data, options, axes_labels) {
     let cfg = {
       w: 600,				//Width of the circle
       h: 600,				//Height of the circle
@@ -106,8 +123,20 @@ export class DepressionComponent implements OnInit {
       }//for i
     }//if
 
-    let maxValue = 13
+    let arr1 = data[0].map(function(i, j){return parseFloat(i.v)})
+    let arr2 = data[1].map(function(i, j){return parseFloat(i.v)})
+    console.log(arr1)
+    console.log(arr2)
+    var max1 = arr1.reduce(function(a, b) {
+      return Math.max(a, b);
+    }, -Infinity);
+    var max2 = arr2.reduce(function(a, b) {
+      return Math.max(a, b);
+    }, -Infinity);
+    let maxValue = Math.max(max1, max2)
     console.log(maxValue)
+  //  let maxValua = Math.max([Math.max(data[0].map(function(i, j){return i.v})), Math.max(data[1].map(function(i, j){return i.v}))])
+
 
     let allAxis = (data[0].map(function(i, j){return i.axis})),	//Names of each axis
       total = allAxis.length,					//The number of different axes
@@ -121,7 +150,7 @@ export class DepressionComponent implements OnInit {
     /////////////////////////////////////////////////////////
 
     //Remove whatever chart with the same id/class was present before
-    d3.select(id).select("svg").remove();
+   // d3.select(id).select("svg").remove();
 
     //Initiate the radar chart SVG
     let svg = d3.select(id).append("svg")
@@ -215,7 +244,7 @@ export class DepressionComponent implements OnInit {
       .attr("dy", "0.35em")
       .attr("x", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice*i - Math.PI/2); })
       .attr("y", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice*i - Math.PI/2); })
-      .text((d,i) => this.ages_nl[i])
+      .text((d,i) => axes_labels[i])
       .call(wrap, cfg.wrapWidth);
 
     /////////////////////////////////////////////////////////
@@ -261,12 +290,9 @@ export class DepressionComponent implements OnInit {
     blobWrapper.append("path")
       .attr("class", "radarStroke")
       .attr("d", function(d:any,i) {
-        console.log(radarLine(d))
         return radarLine(d); })
       .style("stroke-width", cfg.strokeWidth + "px")
       .style("stroke", function(d,i:any) {
-        console.log(d)
-        console.log(i)
         return cfg.color(i); })
       .style("fill", "none")
       .style("filter" , "url(#glow)");
@@ -339,7 +365,6 @@ export class DepressionComponent implements OnInit {
       .on("mouseover", function(d,i:any) {
         let newX =  parseFloat(d3.select(this).attr('cx')) - 10;
         let newY =  parseFloat(d3.select(this).attr('cy')) - 10;
-        console.log(i.v)
         tooltip
           .attr('x', newX)
           .attr('y', newY)
