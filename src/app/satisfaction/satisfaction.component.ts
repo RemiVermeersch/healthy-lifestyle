@@ -32,7 +32,7 @@ export class SatisfactionComponent implements OnInit {
                       }
 
     let margin = {top: 10, right: 10, bottom: 10, left: 10};
-    let width = 1200;
+    let width = 1300;
     let height = 500;
 
     let maleStats = {x: 90, y: height - 50, height: height - 50, width: width/10, color: "#96D6F7"}
@@ -75,7 +75,7 @@ export class SatisfactionComponent implements OnInit {
       createMainGraph(data, maleStats, femaleStats, mainFocus, subject);
       
 
-      var offsetX = 500;
+      var offsetX = 450;
       var offsetY = 0;
       var count = 0;
       var labels = data.columns.slice(1,11);
@@ -101,7 +101,7 @@ export class SatisfactionComponent implements OnInit {
               createSideGraph(data, maleStats2, femaleStats2, graph1, col);
 
               if (count == 4) {
-                  offsetX = 500;
+                  offsetX = 450;
                   offsetY = - smallGraphHeight - 50
               }
               else {
