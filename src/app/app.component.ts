@@ -19,7 +19,7 @@ export class AppComponent {
 
       // fullpage options
       anchors: ['firstPage', 'secondPage', 'EconomyAndFinance', 'fourthPage', 'lastPage'],
-      sectionsColor: ['#C3E9C0', 'orange', '#C3E9C0', '#ADD8E6'],
+      sectionsColor: ["#F9F9F9"],
       scrollHorizontally: true,
       verticalCentered: false,
       loopHorizontal: false,
