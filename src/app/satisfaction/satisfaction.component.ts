@@ -17,7 +17,7 @@ export class SatisfactionComponent implements OnInit {
 
   createChart() {
     
-    let subject = "TIMESAT"
+    let subject = "LIFESAT"
 
     let subjectNames = {"TIMESAT": "Tijdsgebruik",
                         "COMSAT": "Pendelen",
@@ -27,43 +27,37 @@ export class SatisfactionComponent implements OnInit {
                         "MEANLIFE": "Levensnut",
                         "RELSAT": "Relaties",
                         "LIVENVSAT": "Leefomgeving",
-                        "GREENSAT": "Groene omgeving",
+                        "GREENSAT": "Recreatieruimtes",
                         "LIFESAT": "Algemeen"
                       }
-
-    let subjectExplanations = {"TIMESAT": "Tijdsgebruik",
-                              "COMSAT": "Pendelen",
-                              "JOBSAT": "Job",
-                              "ACCSAT": "Onderdak",
-                              "FINSAT":  "Financieel",
-                              "MEANLIFE": "Levensnut",
-                              "RELSAT": "Relaties",
-                              "LIVENVSAT": "Leefomgeving",
-                              "GREENSAT": "Groene omgeving",
-                              "LIFESAT": "Algemeen"
- }
-
-    function setFocus(sub) {
-      console.log("works as well")
-      console.log(sub)
-      // subject = sub
-      // createMainGraph(data, maleStats, femaleStats, mainFocus, sub)
-    }
 
     let margin = {top: 10, right: 10, bottom: 10, left: 10};
     let width = window.innerWidth;
     let height = window.innerHeight - 150;
 
-    let maleStats = {x: 90, y: height, height: height, width: width/10, color: "#96D6F7"}
-    let femaleStats = {x: maleStats.x + maleStats.width * 1.25, y: height, height: height, width: width/10, color: "#FFA500"}
+    let maleStats = {x: 90, y: height - 50, height: height - 50, width: width/10, color: "#96D6F7"}
+    let femaleStats = {x: maleStats.x + maleStats.width * 1.25, y: height - 50, height: height - 50, width: width/10, color: "#FFA500"}
+
+    var textElement = document.getElementById("explanation");
+
 
     let svg = d3.select("#satisfaction")
       .append("svg")
         .attr("width", width)
         .attr("height", height)
-      .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
+
+    // let text = svg.append("g").append("text").text(`Deze vraag was het uitgangspunt bij het opstellen van deze scroll-through. 
+    // Vertrekkende van \n de algmene tevredenheid bij de Belg, zal er eerst gekeken worden naar verschillende soorten tevredenheid.
+    //  Om vervolgens te bekijken wat deze tevredenheid al dan niet kan beïnvloeden, zullen enkele aspecten meer in detail gevisualiseerd worden. 
+    //  Zo zal in een eerste uitdieping het financiële aspect verder verwerkt worden. Daarnaast zullen mannen en vrouwen vergeleken worden op basis van hoe 
+    //  gezond ze zichzelf vinden. Tot slot wordt er nog een kijkje genomen naar de cijfers over depressieve symptomen.
+    //   Op deze manier is het hopelijk mogelijk nieuwe inzichten te geven over hoe het met de gemiddelde vrouwelijke en mannelijke Belg gesteld is.`)
+    //   .attr("x", 600)
+    //   .attr("y", 200)
+    //   .attr("width", 400)
+
 
     let mainFocus = svg.append("g")
       .attr("id", "mainFocus")
@@ -94,10 +88,10 @@ export class SatisfactionComponent implements OnInit {
               .attr("transform",
               "translate(" + offsetX + "," + offsetY + ")")
               .attr("id", col)
-
-              document.getElementById(col).addEventListener("click", function (event) {
-                console.log("got here" + col)
-                createMainGraph(data, maleStats, femaleStats, mainFocus, col)
+              .attr("data-tip", col)
+              .on("click", (e) => {
+                console.log(e.target.parentElement.getAttribute("data-tip"));
+                createMainGraph(data, maleStats, femaleStats, mainFocus, e.target.parentElement.getAttribute("data-tip"));
               });
 
 
@@ -133,12 +127,20 @@ export class SatisfactionComponent implements OnInit {
     })
     }
 
-  let colorRatingMale = { low: "#af8dc3", medium: "#f7f7f7", high: "#7fbf7b"}
-  let colorRatingFemale = { low: "#e9a3c9", medium: "#f7f7f7", high: "#a1d76a"}
+  let colorRatingMale = { low: "#ef8a62", medium: "#e6dddc", high: "#67a9cf"}
+  let colorRatingFemale = { low: "#ef8a62", medium: "#e6dddc", high: "#67a9cf"}
 
 
   function createDivisionGraph(data, maleStats, femaleStats, focusGraph, subject) {
     focusGraph.selectAll("*").remove()
+
+    var yScale = d3.scaleLinear().range([height - margin.bottom, 40]);
+    yScale.domain([0,100]);
+
+    var yAxis = d3.axisLeft(yScale);
+    focusGraph.append("g")
+        .attr("transform", `translate(${margin.left + 50}, 0)`)
+        .call(yAxis);
 
     let male = data.filter(d => (d['sex'] == "M"));
     let mHigh =  male.filter(d => (d['lev_satis'] == "HIGH")).map(d => d['OBS_VALUE']) / 100
@@ -152,55 +154,110 @@ export class SatisfactionComponent implements OnInit {
 
     focusGraph.append("rect")
     .attr("width", maleStats.width)
-    .attr("height", maleStats.height * mHigh)
+    .attr("height", maleStats.height * mLow)
     .attr("x", margin.left + maleStats.x)
-    .attr("y", height - margin.bottom - maleStats.y * mHigh)
-    .attr("fill", colorRatingMale.high)
-
-    // focusGraph.append("text")
-    // .attr("text-anchor", "middle")
-    // .attr("dominant-baseline", "central")
-    // .attr("x", margin.left + maleStats.x + maleStats.width / 2)
-    // .attr("y", height - margin.bottom - maleStats.y * mHigh/ 2)
-    // .attr("font-size", 200)
-    // .text(":)")
-    // .attr("rotate", 90)
-    // .attr("fill", "black")
+    .attr("y", height - margin.bottom - maleStats.y * mLow)
+    .attr("fill", colorRatingMale.low)
 
     focusGraph.append("rect")
     .attr("width", maleStats.width)
     .attr("height", maleStats.height * mMedium)
     .attr("x", margin.left + maleStats.x)
-    .attr("y", height - margin.bottom - maleStats.y * mHigh - maleStats.y * mMedium)
+    .attr("y", height - margin.bottom - maleStats.y * mLow - maleStats.y * mMedium)
     .attr("fill", colorRatingMale.medium)
 
     focusGraph.append("rect")
     .attr("width", maleStats.width)
-    .attr("height", maleStats.height * mLow)
+    .attr("height", maleStats.height * mHigh)
     .attr("x", margin.left + maleStats.x)
     .attr("y", height - margin.bottom - maleStats.y)
-    .attr("fill", colorRatingMale.low)
+    .attr("fill", colorRatingMale.high)
 
-    focusGraph.append("rect")
-    .attr("width", femaleStats.width)
-    .attr("height", femaleStats.height * fHigh)
-    .attr("x", margin.left + femaleStats.x)
-    .attr("y", height - margin.bottom - femaleStats.y * fHigh)
-    .attr("fill", colorRatingFemale.high)
-
-    focusGraph.append("rect")
-    .attr("width", femaleStats.width)
-    .attr("height", femaleStats.height * fMedium)
-    .attr("x", margin.left + femaleStats.x)
-    .attr("y", height - margin.bottom - femaleStats.y * fHigh - femaleStats.y * fMedium)
-    .attr("fill", colorRatingFemale.medium)
+    focusGraph.append("image")
+    .attr('xlink:href', "assets/satisfaction/male-icon.png")
+    .attr("width", maleStats.width)
+    .attr("height", maleStats.height * mMedium)
+    .attr("x", margin.left + maleStats.x)
+    .attr("y", height - margin.bottom - maleStats.y * mMedium)
 
     focusGraph.append("rect")
     .attr("width", femaleStats.width)
     .attr("height", femaleStats.height * fLow)
     .attr("x", margin.left + femaleStats.x)
-    .attr("y", height - margin.bottom - femaleStats.y)
+    .attr("y", height - margin.bottom - femaleStats.y * fLow)
     .attr("fill", colorRatingFemale.low)
+
+    focusGraph.append("rect")
+    .attr("width", femaleStats.width)
+    .attr("height", femaleStats.height * fMedium)
+    .attr("x", margin.left + femaleStats.x)
+    .attr("y", height - margin.bottom - femaleStats.y * fLow - femaleStats.y * fMedium)
+    .attr("fill", colorRatingFemale.medium)
+
+    focusGraph.append("rect")
+    .attr("width", femaleStats.width)
+    .attr("height", femaleStats.height * fHigh)
+    .attr("x", margin.left + femaleStats.x)
+    .attr("y", height - margin.bottom - femaleStats.y)
+    .attr("fill", colorRatingFemale.high)
+
+    focusGraph.append("image")
+    .attr('xlink:href', "assets/satisfaction/female-icon.png")
+    .attr("width", femaleStats.width)
+    .attr("height", femaleStats.height * fMedium)
+    .attr("x", margin.left + femaleStats.x)
+    .attr("y", height - margin.bottom - femaleStats.y * fMedium)
+
+    focusGraph.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "central")
+    .attr("x", margin.left + maleStats.x + maleStats.width + (femaleStats.x - maleStats.x - maleStats.width) / 2)
+    .attr("y", height - margin.bottom - maleStats.height - 30)
+    .style("font-size", "30px")
+    .text(subjectNames[subject] + " - Scores")
+    .attr("fill", "black")
+
+    focusGraph.append("rect")
+    .attr("width", 50)
+    .attr("height", 50)
+    .attr("x", femaleStats.x + femaleStats.width + 50)
+    .attr("y", 50)
+    .attr("fill", colorRatingFemale.high)
+
+    focusGraph.append("text")
+    .attr("x", femaleStats.x + femaleStats.width + 110)
+    .attr("y", 85)
+    .style("font-size", "25px")
+    .text("Hoog")
+    .attr("fill", "black")
+
+    focusGraph.append("rect")
+    .attr("width", 50)
+    .attr("height", 50)
+    .attr("x", femaleStats.x + femaleStats.width + 50)
+    .attr("y", 120)
+    .attr("fill", colorRatingFemale.medium)
+
+    focusGraph.append("text")
+    .attr("x", femaleStats.x + femaleStats.width + 110)
+    .attr("y", 155)
+    .style("font-size", "25px")
+    .text("Gemiddeld")
+    .attr("fill", "black")
+
+    focusGraph.append("rect")
+    .attr("width", 50)
+    .attr("height", 50)
+    .attr("x", femaleStats.x + femaleStats.width + 50)
+    .attr("y", 190)
+    .attr("fill", colorRatingFemale.low)
+
+    focusGraph.append("text")
+    .attr("x", femaleStats.x + femaleStats.width + 110)
+    .attr("y", 225)
+    .style("font-size", "25px")
+    .text("Laag")
+    .attr("fill", "black")
 
     focusGraph.append("rect")
       .attr("id", "mainClick")
@@ -215,11 +272,14 @@ export class SatisfactionComponent implements OnInit {
 
   }
 
-  function createMainGraph(data, maleStats, femaleStats, focusGraph, subject) {
+  function createMainGraph(data, maleStats, femaleStats, focusGraph, subj) {
     focusGraph.selectAll("*").remove()
 
-    let percMale =  parseFloat(data.map(d => d[subject])[1]) / 10
-    let percFemale =  parseFloat(data.map(d => d[subject])[2]) / 10
+
+    subject = subj
+
+    let percMale =  parseFloat(data.map(d => d[subj])[1]) / 10
+    let percFemale =  parseFloat(data.map(d => d[subj])[2]) / 10
 
     focusGraph.append("rect")
     .attr("width", maleStats.width)
@@ -233,7 +293,7 @@ export class SatisfactionComponent implements OnInit {
     .attr("height", maleStats.height * (1-percMale))
     .attr("x", margin.left + maleStats.x)
     .attr("y", height - margin.bottom - maleStats.y)
-    .attr("fill", "black")
+    .attr("fill", "#DCDCDC")
 
     focusGraph.append("image")
     .attr('xlink:href', "assets/satisfaction/male-icon.png")
@@ -247,9 +307,9 @@ export class SatisfactionComponent implements OnInit {
     .attr("dominant-baseline", "central")
     .attr("x", margin.left + maleStats.x + maleStats.width / 2)
     .attr("y", height - margin.bottom - maleStats.y * percMale - maleStats.height * (1-percMale) / 2)
-    .attr("font-size", 70)
+    .style("font-size", "50px")
     .text(percMale * 100 + "%")
-    .attr("fill", "white")
+    .attr("fill", "black")
 
     focusGraph.append("rect")
     .attr("width", femaleStats.width)
@@ -263,7 +323,7 @@ export class SatisfactionComponent implements OnInit {
     .attr("height", femaleStats.height * (1-percFemale))
     .attr("x", margin.left + femaleStats.x)
     .attr("y", height - margin.bottom - femaleStats.y)
-    .attr("fill", "black")
+    .attr("fill", "#DCDCDC")
 
     focusGraph.append("image")
     .attr('xlink:href', "assets/satisfaction/female-icon.png")
@@ -277,9 +337,18 @@ export class SatisfactionComponent implements OnInit {
     .attr("dominant-baseline", "central")
     .attr("x", margin.left + femaleStats.x + femaleStats.width / 2)
     .attr("y", height - margin.bottom - femaleStats.y * percFemale - femaleStats.height * (1-percFemale) / 2)
-    .attr("font-size", 70)
+    .style("font-size", "50px")
     .text(percFemale * 100 + "%")
-    .attr("fill", "white")
+    .attr("fill", "black")
+
+    focusGraph.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "central")
+    .attr("x", margin.left + maleStats.x + maleStats.width + (femaleStats.x - maleStats.x - maleStats.width) / 2)
+    .attr("y", height - margin.bottom - maleStats.height - 30)
+    .style("font-size", "30px")
+    .text(subjectNames[subj] + " - Gemiddelde")
+    .attr("fill", "black")
     
     focusGraph.append("rect")
     .attr("id", "mainClick")
@@ -310,7 +379,7 @@ function createSideGraph(data, maleStats, femaleStats, sideGraph, subject) {
     .attr("height", maleStats.height * (1-percMale))
     .attr("x", margin.left + maleStats.x)
     .attr("y", height - margin.bottom - maleStats.y)
-    .attr("fill", "black")
+    .attr("fill", "#DCDCDC")
 
     // sideGraph.append("image")
     // .attr('xlink:href', "male-icon.png")
@@ -324,16 +393,16 @@ function createSideGraph(data, maleStats, femaleStats, sideGraph, subject) {
     .attr("dominant-baseline", "central")
     .attr("x", margin.left + maleStats.x + maleStats.width / 2)
     .attr("y", height - margin.bottom - maleStats.y * percMale - maleStats.height * (1-percMale) / 2)
-    .attr("font-size", 10)
+    .style("font-size", "15px")
     .text(percMale * 100 + "%")
-    .attr("fill", "white")
+    .attr("fill", "black")
 
     sideGraph.append("text")
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "central")
     .attr("x", margin.left + maleStats.x + maleStats.width + (femaleStats.x - maleStats.x - maleStats.width) / 2)
     .attr("y", height - margin.bottom - maleStats.height - maleStats.height / 7)
-    .attr("font-size", 10)
+    .style("font-size", "19px")
     .text(subjectNames[subject])
     .attr("fill", "black")
 
@@ -349,7 +418,7 @@ function createSideGraph(data, maleStats, femaleStats, sideGraph, subject) {
     .attr("height", femaleStats.height * (1-percFemale))
     .attr("x", margin.left + femaleStats.x)
     .attr("y", height - margin.bottom - femaleStats.y)
-    .attr("fill", "black")
+    .attr("fill", "#DCDCDC")
 
     // sideGraph.append("image")
     // .attr('xlink:href', "female-icon.png")
@@ -363,9 +432,9 @@ function createSideGraph(data, maleStats, femaleStats, sideGraph, subject) {
     .attr("dominant-baseline", "central")
     .attr("x", margin.left + femaleStats.x + femaleStats.width / 2)
     .attr("y", height - margin.bottom - femaleStats.y * percFemale - femaleStats.height * (1-percFemale) / 2)
-    .attr("font-size", 10)
+    .style("font-size", "15px")
     .text(percFemale * 100 + "%")
-    .attr("fill", "white")
+    .attr("fill", "black")
 }
   }
 
