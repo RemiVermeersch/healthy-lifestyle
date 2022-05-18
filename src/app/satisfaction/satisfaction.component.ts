@@ -127,8 +127,8 @@ export class SatisfactionComponent implements OnInit {
     })
     }
 
-  let colorRatingMale = { low: "#ef8a62", medium: "#e6dddc", high: "#67a9cf"}
-  let colorRatingFemale = { low: "#ef8a62", medium: "#e6dddc", high: "#67a9cf"}
+  let colorRatingMale = { low: "#e9a3c9", medium: "#e6dddc", high: "#a1d76a"}
+  let colorRatingFemale = { low: "#e9a3c9", medium: "#e6dddc", high: "#a1d76a"}
 
 
   function createDivisionGraph(data, maleStats, femaleStats, focusGraph, subject) {
