@@ -113,6 +113,7 @@ export class DepressionComponent implements OnInit {
       total = allAxis.length,					//The number of different axes
       radius = Math.min(cfg.w/2, cfg.h/2), 	//Radius of the outermost circle
       Format = d3.format(".0%"),			 	//Percentage formatting
+      FormatComma = d3.format(".1%"),
       angleSlice = Math.PI * 2 / total;		//The width in radians of each "slice"
 
     /////////////////////////////////////////////////////////
@@ -335,13 +336,14 @@ export class DepressionComponent implements OnInit {
       .attr("cy", function(d:any,i){ return rScale(d.v) * Math.sin(angleSlice*i - Math.PI/2); })
       .style("fill", "none")
       .style("pointer-events", "all")
-      .on("mouseover", function(d,i) {
+      .on("mouseover", function(d,i:any) {
         let newX =  parseFloat(d3.select(this).attr('cx')) - 10;
         let newY =  parseFloat(d3.select(this).attr('cy')) - 10;
+        console.log(i.v)
         tooltip
           .attr('x', newX)
           .attr('y', newY)
-          .text(Format(d.value))
+          .text(FormatComma(i.v*0.01))
           .transition().duration(200)
           .style('opacity', 1);
       })
