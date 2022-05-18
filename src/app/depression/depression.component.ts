@@ -87,7 +87,7 @@ export class DepressionComponent implements OnInit {
   }
 
   generate_diploma_spider(diploma_data, age) {
-    let margin = {top: 100, right: 100, bottom: 100, left: 50}
+    let margin = {top: 100, right: 100, bottom: 300, left: 50}
     let width = Math.min(window.innerWidth/3, window.innerWidth - 10) - margin.left - margin.right
     let height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 
@@ -105,7 +105,7 @@ export class DepressionComponent implements OnInit {
 
     let string_age = this.ages_nl[this.ages.indexOf(age)]
 
-    let title = "Aantal mensen met depressieve symptomen \n per educatie niveau voor de leeftijd" + string_age
+    let title = "per educatie niveau voor de leeftijd tussen " + string_age
     this.radarChart("#diploma_chart", diploma_data, radarChartOptions, this.dipl_nl, title)
   }
 
@@ -182,11 +182,20 @@ export class DepressionComponent implements OnInit {
     svg.append("text").attr("x", 120).attr("y", 85).text("Man").style("font-size", "15px").attr("alignment-baseline","middle")
 
     svg.append("text")
-      .attr("x", 350)
+      .attr("x", 300)
       .attr("y", 680)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
       .text(title);
+
+    if (id == "#diploma_chart") {
+      svg.append("text")
+        .attr("x", 300)
+        .attr("y", 660)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .text("Aantal mensen met depressieve symptomen");
+    }
 
     /////////////////////////////////////////////////////////
     ////////// Glow filter for some extra pizzazz ///////////
