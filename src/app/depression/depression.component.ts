@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
-import {flatMap} from "rxjs";
 
 @Component({
   selector: 'app-depression',
@@ -16,6 +15,7 @@ export class DepressionComponent implements OnInit {
   age_data;
 
   ages = ["Y15-24", "Y25-34", "Y35-44", "Y45-54", "Y55-64", "Y65-74", "Y_GE75"]
+  ages_nl = ["15-24", "25-34", "35-44", "45-54", "55-64", "65-74", ">=75"]
 
   nodes;
   ngOnInit(): void {
@@ -68,7 +68,7 @@ export class DepressionComponent implements OnInit {
     let width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right
     let height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 
-    let color = ["#EDC951","#CC333F","#00A0B0"];
+    let color = d3.scaleOrdinal().range(["#FFA500", "#96D6F7"])
 
     let radarChartOptions = {
       w: width,
@@ -112,7 +112,7 @@ export class DepressionComponent implements OnInit {
     let allAxis = (data[0].map(function(i, j){return i.axis})),	//Names of each axis
       total = allAxis.length,					//The number of different axes
       radius = Math.min(cfg.w/2, cfg.h/2), 	//Radius of the outermost circle
-      Format = d3.format('%'),			 	//Percentage formatting
+      Format = d3.format(".0%"),			 	//Percentage formatting
       angleSlice = Math.PI * 2 / total;		//The width in radians of each "slice"
 
     /////////////////////////////////////////////////////////
@@ -130,6 +130,14 @@ export class DepressionComponent implements OnInit {
     //Append a g element
     let g = svg.append("g")
       .attr("transform", "translate(" + (cfg.w/2 + cfg.margin.left) + "," + (cfg.h/2 + cfg.margin.top) + ")");
+
+    let color = ["#FFA500", "#96D6F7"]
+
+    // Handmade legend
+    svg.append("circle").attr("cx",100).attr("cy",50).attr("r", 6).style("fill", color[0])
+    svg.append("circle").attr("cx",100).attr("cy",80).attr("r", 6).style("fill", color[1])
+    svg.append("text").attr("x", 120).attr("y", 50).text("Vrouw").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("text").attr("x", 120).attr("y", 80).text("Man").style("font-size", "15px").attr("alignment-baseline","middle")
 
     /////////////////////////////////////////////////////////
     ////////// Glow filter for some extra pizzazz ///////////
@@ -198,6 +206,17 @@ export class DepressionComponent implements OnInit {
       .style("stroke", "white")
       .style("stroke-width", "2px");
 
+    //Append the labels at each axis
+    axis.append("text")
+      .attr("class", "legend")
+      .style("font-size", "11px")
+      .attr("text-anchor", "middle")
+      .attr("dy", "0.35em")
+      .attr("x", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice*i - Math.PI/2); })
+      .attr("y", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice*i - Math.PI/2); })
+      .text((d,i) => this.ages_nl[i])
+      .call(wrap, cfg.wrapWidth);
+
     /////////////////////////////////////////////////////////
     ///////////// Draw the radar chart blobs ////////////////
     /////////////////////////////////////////////////////////
@@ -218,7 +237,7 @@ export class DepressionComponent implements OnInit {
       .append("path")
       .attr("class", "radarArea")
       .attr("d", function(d:any,i) { return radarLine(d); })
-      .style("fill", function(d,i) { return cfg.color[i]; })
+      .style("fill", function(d,i:any) { return cfg.color(i); })
       .style("fill-opacity", cfg.opacityArea)
       .on('mouseover', function (d,i){
         //Dim all blobs
@@ -240,9 +259,14 @@ export class DepressionComponent implements OnInit {
     //Create the outlines
     blobWrapper.append("path")
       .attr("class", "radarStroke")
-      .attr("d", function(d:any,i) { return radarLine(d); })
+      .attr("d", function(d:any,i) {
+        console.log(radarLine(d))
+        return radarLine(d); })
       .style("stroke-width", cfg.strokeWidth + "px")
-      .style("stroke", function(d,i) { return cfg.color[i]; })
+      .style("stroke", function(d,i:any) {
+        console.log(d)
+        console.log(i)
+        return cfg.color(i); })
       .style("fill", "none")
       .style("filter" , "url(#glow)");
 
@@ -253,14 +277,83 @@ export class DepressionComponent implements OnInit {
       .attr("class", "radarCircle")
       .attr("r", cfg.dotRadius)
       .attr("cx", function(d:any,i){
-        console.log(d)
-        console.log(i)
-        console.log(rScale(d.v))
-        console.log(rScale(d.v) * Math.cos(angleSlice*i - Math.PI/2))
         return rScale(d.v) * Math.cos(angleSlice*i - Math.PI/2); })
       .attr("cy", function(d:any,i){ return rScale(d.v) * Math.sin(angleSlice*i - Math.PI/2); })
-      .style("fill", function(d,i,j) { return cfg.color[i]; })
+      .style("fill", function(d,i:any,j) {
+        return "#737373"; })
       .style("fill-opacity", 0.8);
+
+    /////////////////////////////////////////////////////////
+    /////////////////// Helper Function /////////////////////
+    /////////////////////////////////////////////////////////
+
+    //Taken from http://bl.ocks.org/mbostock/7555321
+    //Wraps SVG text
+    function wrap(text, width) {
+      text.each(function() {
+        var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.4, // ems
+          y = text.attr("y"),
+          x = text.attr("x"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+
+        while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+          }
+        }
+      });
+    }//wrap
+
+    /////////////////////////////////////////////////////////
+    //////// Append invisible circles for tooltip ///////////
+    /////////////////////////////////////////////////////////
+
+    //Wrapper for the invisible circles on top
+    var blobCircleWrapper = g.selectAll(".radarCircleWrapper")
+      .data(data)
+      .enter().append("g")
+      .attr("class", "radarCircleWrapper");
+
+    //Append a set of invisible circles on top for the mouseover pop-up
+    blobCircleWrapper.selectAll(".radarInvisibleCircle")
+      .data(function(d:any,i) { return d; })
+      .enter().append("circle")
+      .attr("class", "radarInvisibleCircle")
+      .attr("r", cfg.dotRadius*1.5)
+      .attr("cx", function(d:any,i){ return rScale(d.v) * Math.cos(angleSlice*i - Math.PI/2); })
+      .attr("cy", function(d:any,i){ return rScale(d.v) * Math.sin(angleSlice*i - Math.PI/2); })
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .on("mouseover", function(d,i) {
+        let newX =  parseFloat(d3.select(this).attr('cx')) - 10;
+        let newY =  parseFloat(d3.select(this).attr('cy')) - 10;
+        tooltip
+          .attr('x', newX)
+          .attr('y', newY)
+          .text(Format(d.value))
+          .transition().duration(200)
+          .style('opacity', 1);
+      })
+      .on("mouseout", function(){
+        tooltip.transition().duration(200)
+          .style("opacity", 0);
+      });
+
+    //Set up the small tooltip for when you hover over a circle
+    var tooltip = g.append("text")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
 
 
   }//RadarChart
