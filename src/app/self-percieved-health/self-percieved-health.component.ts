@@ -124,30 +124,47 @@ export class SelfPercievedHealthComponent implements OnInit {
     let totalMargin = margin.top+margin.bottom
 
     var slice = this.barchart.selectAll("g.g");
+
+    var tip = d3Tip()
+    tip
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+        console.log(d.toElement.getBoundingClientRect().left);
+        return `<span style='position:absolute; left:${d.toElement.getBoundingClientRect().left}px;top:${d.toElement.getBoundingClientRect().top-50}px'>` + d.toElement.getAttribute("data-val") + "</span>";
+      });
+
+    this.barchart.call(tip)
     
     slice.selectAll(".bar1")
       .data( x => [this.female_counts[x]])
       .join("rect")
-      .transition()
-      .duration(1000)
+      .attr("data-val", (d) => {return d})
       .attr("width", 15)
       .attr("class","bar1")
       .attr("x", (d:any) => { return x1("M")+45; })
       .style("fill", "#FFA500")
       .attr("y", (d)=>(yScale(d)+totalMargin))
       .attr("height", (d:any) =>  height-totalMargin-yScale(d))
+      .on("mouseover", d => tip.show(d))
+      .on("mouseout", d => tip.hide(d))
+      .transition()
+      .duration(1000);
 
     slice.selectAll(".bar2")
       .data( x => [this.male_counts[x]])
       .join("rect")
-      .transition()
-      .duration(1000)
+      .attr("data-val", (d) => {return d})
       .attr("width", 15)
       .attr("class","bar2")
       .attr("x", (d:any) => { return x1("F")+45; })
       .style("fill", "#96D6F7" )
       .attr("y", (d)=>(yScale(d)+totalMargin))
-      .attr("height", (d:any) =>  height-totalMargin-yScale(d));
+      .attr("height", (d:any) =>  height-totalMargin-yScale(d))
+      .on("mouseover", d => tip.show(d))
+      .on("mouseout", d => tip.hide(d))
+      .transition()
+      .duration(1000);
   }
   
 
