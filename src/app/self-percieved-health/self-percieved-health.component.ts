@@ -151,7 +151,6 @@ export class SelfPercievedHealthComponent implements OnInit {
   
 
   update_graph(old:string){
-    let old_filtered = this.data.filter( x => x.age == old)
     let filtered = this.data.filter( x => x.age == this.ageFilter)
 
     let tempValues = {};
@@ -361,7 +360,8 @@ export class SelfPercievedHealthComponent implements OnInit {
   }
 
   createGraph(){
-    this.svg = d3.select("#chart").append("svg")
+    this.svg = d3.select("#chart")
+                  .append("svg")
                   .attr("width", width + 20 + 20)
                   .attr("height", height + 20 + 20)
                   .append("g")
@@ -486,7 +486,7 @@ export class SelfPercievedHealthComponent implements OnInit {
   }
 
   ticked = () => {
-    var u = d3.select('svg')
+    var u = this.svg
       .selectAll('circle')
       .data(this.nodes)
       .join('circle')
