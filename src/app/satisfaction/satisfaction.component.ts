@@ -55,7 +55,7 @@ export class SatisfactionComponent implements OnInit {
     let height = window.innerHeight - 150;
 
     let maleStats = {x: 90, y: height, height: height, width: width/10, color: "#96D6F7"}
-    let femaleStats = {x: maleStats.x + maleStats.width * 1.25, y: height, height: height, width: width/10, color: "#F7D4E0"}
+    let femaleStats = {x: maleStats.x + maleStats.width * 1.25, y: height, height: height, width: width/10, color: "#FFA500"}
 
     let svg = d3.select("#satisfaction")
       .append("svg")
@@ -97,12 +97,12 @@ export class SatisfactionComponent implements OnInit {
 
               document.getElementById(col).addEventListener("click", function (event) {
                 console.log("got here" + col)
-                // createMainGraph(data, maleStats, femaleStats, mainFocus, col)
+                createMainGraph(data, maleStats, femaleStats, mainFocus, col)
               });
 
 
               let maleStats2 = {x: 125, y: smallGraphHeight, height: smallGraphHeight, width: smallGraphWidth / 3, color: "#96D6F7"}
-              let femaleStats2 = {x: maleStats2.x + maleStats2.width * 1.25, y: smallGraphHeight, height:smallGraphHeight, width: smallGraphWidth / 3, color: "#F7D4E0"}
+              let femaleStats2 = {x: maleStats2.x + maleStats2.width * 1.25, y: smallGraphHeight, height:smallGraphHeight, width: smallGraphWidth / 3, color: "#FFA500"}
 
               createSideGraph(data, maleStats2, femaleStats2, graph1, col);
 
@@ -335,7 +335,7 @@ function createSideGraph(data, maleStats, femaleStats, sideGraph, subject) {
     .attr("y", height - margin.bottom - maleStats.height - maleStats.height / 7)
     .attr("font-size", 10)
     .text(subjectNames[subject])
-    .attr("fill", "white")
+    .attr("fill", "black")
 
     sideGraph.append("rect")
     .attr("width", femaleStats.width)
