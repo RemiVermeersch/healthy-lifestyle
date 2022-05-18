@@ -9,6 +9,7 @@ import { SelfPercievedHealthComponent } from './self-percieved-health/self-perci
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {DepressionComponent} from "./depression/depression.component";
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     EnvironmentEnergyComponent,
     EconomyFinanceComponent,
     EconomyFinanceWealthComponent,
-    SelfPercievedHealthComponent
+    SelfPercievedHealthComponent,
+    DepressionComponent
   ],
   imports: [
     BrowserModule,
@@ -24,6 +26,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     NgxSliderModule,
     MatButtonToggleModule,
     BrowserAnimationsModule,
+    AngularFullpageModule
   ],
   providers: [],
   bootstrap: [AppComponent]
