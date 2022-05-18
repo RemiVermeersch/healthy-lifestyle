@@ -92,9 +92,9 @@ export class SelfPercievedHealthComponent implements OnInit {
   }
 
   update_bar() {
-    var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    var margin = {top: 0, right: 20, bottom: 30, left: 40},
+    width = 850 - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
 
     var x0 = d3.scaleBand().range([0,width-margin.left-margin.right]).padding(0.2);
     var x1 = d3.scaleBand().range([0,40]);
@@ -133,7 +133,7 @@ export class SelfPercievedHealthComponent implements OnInit {
       .attr("width", 15)
       .attr("class","bar1")
       .attr("x", (d:any) => { return x1("M")+45; })
-      .style("fill", "#F7D4E0")
+      .style("fill", "#FFA500")
       .attr("y", (d)=>(yScale(d)+totalMargin))
       .attr("height", (d:any) =>  height-totalMargin-yScale(d))
 
@@ -278,9 +278,9 @@ export class SelfPercievedHealthComponent implements OnInit {
   }
 
   createBarChart() {
-    var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    var margin = {top: 0, right: 20, bottom: 30, left: 40},
+    width = 850 - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
 
     var x0 = d3.scaleBand().range([0,width-margin.left-margin.right]).padding(0.2);
     var x1 = d3.scaleBand().range([0,40]);
@@ -577,7 +577,7 @@ export class SelfPercievedHealthComponent implements OnInit {
 }
 
 let width = 800;
-let height = 350;
+let height = 300;
 let pad_left = 200;
 let y_offset = 100;
 
