@@ -331,8 +331,8 @@ export class SelfPercievedHealthComponent implements OnInit {
       .attr('class', 'd3-tip')
       .offset([-10, 0])
       .html(function(d) {
-        console.log(d);
-        return `<span style='color:red; position:absolute; left:${d.toElement.attributes['x']}px;top:${d.clientY-50}px'>` + d + "</span>";
+        console.log(d.toElement.getBoundingClientRect().left);
+        return `<span style='position:absolute; left:${d.toElement.getBoundingClientRect().left}px;top:${d.toElement.getBoundingClientRect().top-50}px'>` + d.toElement.getAttribute("data-val") + "</span>";
       });
 
     this.barchart.call(tip)
@@ -352,11 +352,13 @@ export class SelfPercievedHealthComponent implements OnInit {
       .join("rect")
       .attr("width", 15)
       .attr("class","bar1")
+      .attr("data-val", d => d)
       .attr("x", (d:any) => { return x1("M")+45; })
       .style("fill", "#F7D4E0")
       .attr("y", (d)=>(yScale(d)+totalMargin))
       .attr("height", (d:any) =>  height-totalMargin-yScale(d))
       .on("mouseover", d => tip.show(d))
+      .on("mouseout", d => tip.hide(d))
       .transition()
       .duration(1000);
 
@@ -365,6 +367,7 @@ export class SelfPercievedHealthComponent implements OnInit {
       .join("rect")
       .attr("width", 15)
       .attr("class","bar2")
+      .attr("data-val", (d) => {return d})
       .attr("x", (d:any) => { return x1("F")+45; })
       .style("fill", "#96D6F7" )
       .attr("y", (d)=>(yScale(d)+totalMargin))
@@ -539,6 +542,7 @@ export class SelfPercievedHealthComponent implements OnInit {
     this.nodes = [];
     let filtered = data.filter( x => x.age == this.ageFilter)
     for(let i=0; i<filtered.length; i++){
+      let obj = {"nmr":filtered[i]};
       let nmbr_of_people = Math.round(parseFloat(filtered[i].OBS_VALUE));
       let groupName = this.parseGroup(filtered[i].sex, filtered[i].levels);
       groups[groupName].cnt = nmbr_of_people;
