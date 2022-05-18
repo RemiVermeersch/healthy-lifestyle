@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { Options } from '@angular-slider/ngx-slider';
+import d3Tip from "d3-tip"
 
 @Component({
   selector: 'app-self-percieved-health',
@@ -309,6 +310,7 @@ export class SelfPercievedHealthComponent implements OnInit {
     this.barchart = d3.select('#bar_chart').append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
+      .style("margin","auto")
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   
@@ -324,7 +326,19 @@ export class SelfPercievedHealthComponent implements OnInit {
       .attr("transform", "translate(0," + totalMargin + ")")
       .call(yAxis)
 
+    var tip = d3Tip()
+    tip
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+        console.log(d);
+        return `<span style='color:red; position:absolute; left:${d.toElement.attributes['x']}px;top:${d.clientY-50}px'>` + d + "</span>";
+      });
 
+    this.barchart.call(tip)
+    
+
+      
     var slice = this.barchart.selectAll(".slice")
       .data(xDomain)
       .enter()
@@ -336,32 +350,38 @@ export class SelfPercievedHealthComponent implements OnInit {
     slice.selectAll(".bar1")
       .data( x => [this.female_counts[x]])
       .join("rect")
-      .transition()
-      .duration(1000)
       .attr("width", 15)
       .attr("class","bar1")
       .attr("x", (d:any) => { return x1("M")+45; })
       .style("fill", "#F7D4E0")
       .attr("y", (d)=>(yScale(d)+totalMargin))
       .attr("height", (d:any) =>  height-totalMargin-yScale(d))
+      .on("mouseover", d => tip.show(d))
+      .transition()
+      .duration(1000);
 
     slice.selectAll(".bar2")
       .data( x => [this.male_counts[x]])
       .join("rect")
-      .transition()
-      .duration(1000)
       .attr("width", 15)
       .attr("class","bar2")
       .attr("x", (d:any) => { return x1("F")+45; })
       .style("fill", "#96D6F7" )
       .attr("y", (d)=>(yScale(d)+totalMargin))
-      .attr("height", (d:any) =>  height-totalMargin-yScale(d));
+      .attr("height", (d:any) =>  height-totalMargin-yScale(d))
+      .on('mouseover', d => tip.show(d))
+      .on("mouseout", d => tip.hide(d))
+      .transition()
+      .duration(1000);
+
+      
 
   }
 
   createGraph(){
     this.svg = d3.select("#chart")
                   .append("svg")
+                  .style("margin","auto")
                   .attr("width", width + 20 + 20)
                   .attr("height", height + 20 + 20)
                   .append("g")
