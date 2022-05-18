@@ -1,0 +1,61 @@
+.container h1{
+    font-family: quicksand, sans-serif !important;
+}
+
+.invisible{
+    display: none;
+}
+
+.visible{
+    display: block;
+}
+
+.card {
+    padding: 25px;
+    border-radius: 15px;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    max-width: 1200px;
+}
+
+#chart{
+    margin:10px auto;
+}
+
+.slider{
+    p{
+        font-weight: bold;
+        font-size: 20px;
+    }
+    padding: 0 50px;
+}
+
+::ng-deep{
+    .ngx-slider .ngx-slider-tick-legend{
+        width: 100px !important;
+    }
+
+    .ngx-slider-inner-tooltip{
+        display: none;
+    }
+}
+::ng-deep{
+    .axis{
+        font-size: 18px !important;
+    }
+    text{
+        font-size: 18px;
+    }
+}
+
+.filter-switch label {
+    cursor: pointer;
+  }
+  .filter-switch-item input:checked + label {
+    color: inherit;
+  }
+  .filter-switch-item input:not(:checked) + label {
+    --bg-opacity: 0;
+    box-shadow: none;
+  }

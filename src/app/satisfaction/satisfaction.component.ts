@@ -11,12 +11,22 @@ export class SatisfactionComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.createChart();
+    this.createChart2();
   }
 
   
 
-  createChart() {
+  
+
+  createChart2() {
+
+    function showDivision() {
+      console.log("works")
+    } 
+
+    function setFocus() {
+      console.log("works as well")
+    }
 
     let margin = {top: 10, right: 10, bottom: 10, left: 10};
     let width = window.innerWidth;
@@ -31,16 +41,21 @@ export class SatisfactionComponent implements OnInit {
             "translate(" + margin.left + "," + margin.top + ")");
 
     let mainFocus = svg.append("g")
+      .attr("id", "mainFocus")
+
+    document.getElementById("mainFocus").addEventListener("click", showDivision)
 
     d3.csv("assets/satisfaction/satisfaction-avg.csv").then(function (data) {
  
       let smallGraphWidth = width / 5;
       let smallGraphHeight = height / 5;
 
-      let maleStats = {x: 100, y: height, height: height, width: 200, percMale:  parseFloat(data.map(d => d["financial"])[1]) / 10}
-      let femaleStats = {x: maleStats.x + maleStats.width * 1.25, y: height, height: height, width: 200, percFemale: parseFloat(data.map(d => d["financial"])[2]) / 10}
+      let maleStats = {x: 100, y: height, height: height, width: 200}
+      let femaleStats = {x: maleStats.x + maleStats.width * 1.25, y: height, height: height, width: 200}
 
-      createMainGraph(data, maleStats, femaleStats, mainFocus);
+      let subject = "financial"
+
+      createMainGraph(data, maleStats, femaleStats, mainFocus, subject);
 
       var offsetX = 500;
       var offsetY = 0;
@@ -54,12 +69,15 @@ export class SatisfactionComponent implements OnInit {
               let graph1 = svg.append("g")
               .attr("transform",
               "translate(" + offsetX + "," + offsetY + ")")
+              .attr("id", col)
+
+              document.getElementById(col).addEventListener("click", setFocus);
 
 
-              maleStats = {x: 200, y: smallGraphHeight, height: smallGraphHeight, width: 50, percMale: parseFloat(data.map(d => d[col])[1]) / 10}
-              femaleStats = {x: maleStats.x + maleStats.width * 1.25, y: smallGraphHeight, height:smallGraphHeight, width: 50, percFemale: parseFloat(data.map(d => d[col])[2]) / 10}
+              maleStats = {x: 200, y: smallGraphHeight, height: smallGraphHeight, width: 50}
+              femaleStats = {x: maleStats.x + maleStats.width * 1.25, y: smallGraphHeight, height:smallGraphHeight, width: 50}
 
-              createSideGraph(data, maleStats, femaleStats, graph1);
+              createSideGraph(data, maleStats, femaleStats, graph1, col);
 
               if (count == 4) {
                   offsetX = 500;
@@ -74,19 +92,22 @@ export class SatisfactionComponent implements OnInit {
     })
   
 
-  function createMainGraph(data, maleStats, femaleStats, focusGraph) {
+  function createMainGraph(data, maleStats, femaleStats, focusGraph, subject) {
+
+    let percMale =  parseFloat(data.map(d => d[subject])[1]) / 10
+    let percFemale =  parseFloat(data.map(d => d[subject])[2]) / 10
 
     console.log("hello")
     focusGraph.append("rect")
     .attr("width", maleStats.width)
-    .attr("height", maleStats.height * maleStats.percMale)
+    .attr("height", maleStats.height * percMale)
     .attr("x", margin.left + maleStats.x)
-    .attr("y", height - margin.bottom - maleStats.y * maleStats.percMale)
+    .attr("y", height - margin.bottom - maleStats.y * percMale)
     .attr("fill", "blue")
 
     focusGraph.append("rect")
     .attr("width", maleStats.width)
-    .attr("height", maleStats.height * (1-maleStats.percMale))
+    .attr("height", maleStats.height * (1-percMale))
     .attr("x", margin.left + maleStats.x)
     .attr("y", height - margin.bottom - maleStats.y)
     .attr("fill", "black")
@@ -94,30 +115,30 @@ export class SatisfactionComponent implements OnInit {
     focusGraph.append("image")
     .attr('xlink:href', "assets/satisfaction/male-icon.png")
     .attr("width", maleStats.width)
-    .attr("height", maleStats.height * maleStats.percMale)
+    .attr("height", maleStats.height * percMale)
     .attr("x", margin.left + maleStats.x)
-    .attr("y", height - margin.bottom - maleStats.y * maleStats.percMale)
+    .attr("y", height - margin.bottom - maleStats.y * percMale)
 
     focusGraph.append("text")
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "central")
     .attr("x", margin.left + maleStats.x + maleStats.width / 2)
-    .attr("y", height - margin.bottom - maleStats.y * maleStats.percMale - maleStats.height * (1-maleStats.percMale) / 2)
+    .attr("y", height - margin.bottom - maleStats.y * percMale - maleStats.height * (1-percMale) / 2)
     .attr("font-size", 70)
-    .text(maleStats.percMale * 100 + "%")
+    .text(percMale * 100 + "%")
     .attr("fill", "white")
 
 
     focusGraph.append("rect")
     .attr("width", femaleStats.width)
-    .attr("height", femaleStats.height * femaleStats.percFemale)
+    .attr("height", femaleStats.height * percFemale)
     .attr("x", margin.left + femaleStats.x)
-    .attr("y", height - margin.bottom - femaleStats.y * femaleStats.percFemale)
+    .attr("y", height - margin.bottom - femaleStats.y * percFemale)
     .attr("fill", "orange")
 
     focusGraph.append("rect")
     .attr("width", femaleStats.width)
-    .attr("height", femaleStats.height * (1-femaleStats.percFemale))
+    .attr("height", femaleStats.height * (1-percFemale))
     .attr("x", margin.left + femaleStats.x)
     .attr("y", height - margin.bottom - femaleStats.y)
     .attr("fill", "black")
@@ -125,32 +146,35 @@ export class SatisfactionComponent implements OnInit {
     focusGraph.append("image")
     .attr('xlink:href', "assets/satisfaction/female-icon.png")
     .attr("width", femaleStats.width)
-    .attr("height", femaleStats.height * femaleStats.percFemale)
+    .attr("height", femaleStats.height * percFemale)
     .attr("x", margin.left + femaleStats.x)
-    .attr("y", height - margin.bottom - femaleStats.y * femaleStats.percFemale)
+    .attr("y", height - margin.bottom - femaleStats.y * percFemale)
   
     focusGraph.append("text")
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "central")
     .attr("x", margin.left + femaleStats.x + femaleStats.width / 2)
-    .attr("y", height - margin.bottom - femaleStats.y * femaleStats.percFemale - femaleStats.height * (1-femaleStats.percFemale) / 2)
+    .attr("y", height - margin.bottom - femaleStats.y * percFemale - femaleStats.height * (1-percFemale) / 2)
     .attr("font-size", 70)
-    .text(femaleStats.percFemale * 100 + "%")
+    .text(percFemale * 100 + "%")
     .attr("fill", "white")
 }
 
-function createSideGraph(data, maleStats, femaleStats, sideGraph) {
+function createSideGraph(data, maleStats, femaleStats, sideGraph, subject) {
+
+  let percMale =  parseFloat(data.map(d => d[subject])[1]) / 10
+  let percFemale =  parseFloat(data.map(d => d[subject])[2]) / 10
 
     sideGraph.append("rect")
     .attr("width", maleStats.width)
-    .attr("height", maleStats.height * maleStats.percMale)
+    .attr("height", maleStats.height * percMale)
     .attr("x", margin.left + maleStats.x)
-    .attr("y", height - margin.bottom - maleStats.y * maleStats.percMale)
+    .attr("y", height - margin.bottom - maleStats.y * percMale)
     .attr("fill", "blue")
 
     sideGraph.append("rect")
     .attr("width", maleStats.width)
-    .attr("height", maleStats.height * (1-maleStats.percMale))
+    .attr("height", maleStats.height * (1-percMale))
     .attr("x", margin.left + maleStats.x)
     .attr("y", height - margin.bottom - maleStats.y)
     .attr("fill", "black")
@@ -158,29 +182,29 @@ function createSideGraph(data, maleStats, femaleStats, sideGraph) {
     sideGraph.append("image")
     .attr('xlink:href', "male-icon.png")
     .attr("width", maleStats.width)
-    .attr("height", maleStats.height * maleStats.percMale)
+    .attr("height", maleStats.height * percMale)
     .attr("x", margin.left + maleStats.x)
-    .attr("y", height - margin.bottom - maleStats.y * maleStats.percMale)
+    .attr("y", height - margin.bottom - maleStats.y * percMale)
 
     sideGraph.append("text")
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "central")
     .attr("x", margin.left + maleStats.x + maleStats.width / 2)
-    .attr("y", height - margin.bottom - maleStats.y * maleStats.percMale - maleStats.height * (1-maleStats.percMale) / 2)
+    .attr("y", height - margin.bottom - maleStats.y * percMale - maleStats.height * (1-percMale) / 2)
     .attr("font-size", 10)
-    .text(maleStats.percMale * 100 + "%")
+    .text(percMale * 100 + "%")
     .attr("fill", "white")
 
     sideGraph.append("rect")
     .attr("width", femaleStats.width)
-    .attr("height", femaleStats.height * femaleStats.percFemale)
+    .attr("height", femaleStats.height * percFemale)
     .attr("x", margin.left + femaleStats.x)
-    .attr("y", height - margin.bottom - femaleStats.y * femaleStats.percFemale)
+    .attr("y", height - margin.bottom - femaleStats.y * percFemale)
     .attr("fill", "orange")
 
     sideGraph.append("rect")
     .attr("width", femaleStats.width)
-    .attr("height", femaleStats.height * (1-femaleStats.percFemale))
+    .attr("height", femaleStats.height * (1-percFemale))
     .attr("x", margin.left + femaleStats.x)
     .attr("y", height - margin.bottom - femaleStats.y)
     .attr("fill", "black")
@@ -188,17 +212,17 @@ function createSideGraph(data, maleStats, femaleStats, sideGraph) {
     sideGraph.append("image")
     .attr('xlink:href', "female-icon.png")
     .attr("width", femaleStats.width)
-    .attr("height", femaleStats.height * femaleStats.percFemale)
+    .attr("height", femaleStats.height * percFemale)
     .attr("x", margin.left + femaleStats.x)
-    .attr("y", height - margin.bottom - femaleStats.y * femaleStats.percFemale)
+    .attr("y", height - margin.bottom - femaleStats.y * percFemale)
   
     sideGraph.append("text")
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "central")
     .attr("x", margin.left + femaleStats.x + femaleStats.width / 2)
-    .attr("y", height - margin.bottom - femaleStats.y * femaleStats.percFemale - femaleStats.height * (1-femaleStats.percFemale) / 2)
+    .attr("y", height - margin.bottom - femaleStats.y * percFemale - femaleStats.height * (1-percFemale) / 2)
     .attr("font-size", 10)
-    .text(femaleStats.percFemale * 100 + "%")
+    .text(percFemale * 100 + "%")
     .attr("fill", "white")
 }
   }
