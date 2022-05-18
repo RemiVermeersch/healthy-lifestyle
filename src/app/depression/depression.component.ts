@@ -322,7 +322,7 @@ export class DepressionComponent implements OnInit {
       .style("fill-opacity", cfg.opacityArea)
       .on('mouseover', function (d,i){
         //Dim all blobs
-        d3.selectAll(".radarArea")
+        d3.select(id).selectAll(".radarArea")
           .transition().duration(200)
           .style("fill-opacity", 0.1);
         //Bring back the hovered over blob
