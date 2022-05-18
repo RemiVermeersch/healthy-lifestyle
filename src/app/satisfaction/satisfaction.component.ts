@@ -94,10 +94,10 @@ export class SatisfactionComponent implements OnInit {
               .attr("transform",
               "translate(" + offsetX + "," + offsetY + ")")
               .attr("id", col)
-
-              document.getElementById(col).addEventListener("click", function (event) {
-                console.log("got here" + col)
-                // createMainGraph(data, maleStats, femaleStats, mainFocus, col)
+              .attr("data-tip", col)
+              .on("click", (e) => {
+                console.log(e.target.parentElement.getAttribute("data-tip"));
+                createMainGraph(data, maleStats, femaleStats, mainFocus, e.target.parentElement.getAttribute("data-tip"));
               });
 
 
