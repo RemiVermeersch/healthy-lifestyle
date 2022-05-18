@@ -22,7 +22,7 @@ export class SatisfactionComponent implements OnInit {
     let subjectNames = {"TIMESAT": "Tijdsgebruik",
                         "COMSAT": "Pendelen",
                         "JOBSAT": "Job",
-                        "ACCSAT": "Onderdak",
+                        "ACCSAT": "Accomodatie",
                         "FINSAT":  "Financieel",
                         "MEANLIFE": "Levensnut",
                         "RELSAT": "Relaties",
