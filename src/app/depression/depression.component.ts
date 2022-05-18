@@ -16,7 +16,9 @@ export class DepressionComponent implements OnInit {
 
   ages = ["Y15-24", "Y25-34", "Y35-44", "Y45-54", "Y55-64", "Y65-74", "Y_GE75"]
   ages_nl = ["15-24", "25-34", "35-44", "45-54", "55-64", "65-74", ">=75"]
-  dipl_nl = ["primair", "secundair", "tertiair"]
+  dipl_nl = ["lager onderwijs", "secundair onderwijs", "hoger onderwijs"]
+  fem_total = 9.6;
+  men_total = 7.2;
 
   nodes;
   ngOnInit(): void {
@@ -87,7 +89,7 @@ export class DepressionComponent implements OnInit {
   }
 
   generate_diploma_spider(diploma_data, age) {
-    let margin = {top: 100, right: 100, bottom: 300, left: 50}
+    let margin = {top: 100, right: 100, bottom: 300, left: 80}
     let width = Math.min(window.innerWidth/3, window.innerWidth - 10) - margin.left - margin.right
     let height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 
@@ -105,7 +107,7 @@ export class DepressionComponent implements OnInit {
 
     let string_age = this.ages_nl[this.ages.indexOf(age)]
 
-    let title = "per educatieniveau voor de leeftijd tussen " + string_age
+    let title = "per maximaal behaald educatieniveau voor de leeftijd tussen " + string_age
     this.radarChart("#diploma_chart", diploma_data, radarChartOptions, this.dipl_nl, title)
   }
 
@@ -237,7 +239,7 @@ export class DepressionComponent implements OnInit {
       .attr("class", "axisLabel")
       .attr("x", 4)
       .attr("y", function(d){return -d*radius/cfg.levels;})
-      .attr("dy", "0.4em")
+      .attr("dy", "-0.1em")
       .style("font-size", function(d, i) {return (d!=5)? "10px" : "20px"})
       .attr("fill", "#737373")
       .text(function(d,i) { return Format(maxValue * d/cfg.levels * 0.01); });
@@ -293,9 +295,7 @@ export class DepressionComponent implements OnInit {
           .duration(200)
           .style('font-size', "16px")
       }).on("click", function(d, i) {
-        if (i != "Y15-24") {
           _this.show_new_figure(i)
-        }
     });
 
     /////////////////////////////////////////////////////////
