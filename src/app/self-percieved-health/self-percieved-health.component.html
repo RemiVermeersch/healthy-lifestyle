@@ -1,0 +1,15 @@
+<div class="container">
+    <h1>Self-perseived health</h1>
+    <div class="card">
+        <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+            <mat-button-toggle (change)="clickBubble()" checked value="bubble">Bubble chart</mat-button-toggle>
+            <mat-button-toggle (change)="clickBar()" value="bar">Bar chart</mat-button-toggle>
+        </mat-button-toggle-group>
+        <div id="chart" class="visible"></div>
+        <div id="bar_chart" class="invisible"></div>
+        <div class="slider">
+            <p>Leeftijd</p>
+            <ngx-slider [(value)]="value" [options]="options" (userChange)="age_changed()"></ngx-slider>
+        </div>
+    </div>
+</div>
