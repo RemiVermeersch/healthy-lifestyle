@@ -24,7 +24,12 @@ export class DepressionComponent implements OnInit {
     d3.csv("/assets/depression/depression_be.csv").then( (data) => {
       this.age_data = this.parse_age_data(data)
       this.generate_spider(this.age_data)
-      let dipl_data = this.parse_diploma_data(data, this.ages[1])
+    })
+  }
+
+  show_new_figure(age) {
+    d3.csv("/assets/depression/depression_be.csv").then( (data) => {
+      let dipl_data = this.parse_diploma_data(data, age)
       this.generate_diploma_spider(dipl_data)
     })
   }
@@ -77,7 +82,7 @@ export class DepressionComponent implements OnInit {
       roundStrokes: true,
       color: color
     }
-    this.radarChart(".radarChart", age_data, radarChartOptions, this.ages_nl)
+    this.radarChart("#age_chart", age_data, radarChartOptions, this.ages_nl)
   }
 
   generate_diploma_spider(diploma_data) {
@@ -96,7 +101,8 @@ export class DepressionComponent implements OnInit {
       roundStrokes: true,
       color: color
     }
-    this.radarChart(".radarChart", diploma_data, radarChartOptions, this.dipl_nl)
+
+    this.radarChart("#diploma_chart", diploma_data, radarChartOptions, this.dipl_nl)
   }
 
   radarChart(id, data, options, axes_labels) {
@@ -150,7 +156,9 @@ export class DepressionComponent implements OnInit {
     /////////////////////////////////////////////////////////
 
     //Remove whatever chart with the same id/class was present before
-   // d3.select(id).select("svg").remove();
+    if (id != "#age_chart") {
+      d3.select(id).select("svg").remove();
+    }
 
     //Initiate the radar chart SVG
     let svg = d3.select(id).append("svg")
@@ -166,8 +174,8 @@ export class DepressionComponent implements OnInit {
     // Handmade legend
     svg.append("circle").attr("cx",100).attr("cy",50).attr("r", 6).style("fill", color[0])
     svg.append("circle").attr("cx",100).attr("cy",80).attr("r", 6).style("fill", color[1])
-    svg.append("text").attr("x", 120).attr("y", 50).text("Vrouw").style("font-size", "15px").attr("alignment-baseline","middle")
-    svg.append("text").attr("x", 120).attr("y", 80).text("Man").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("text").attr("x", 120).attr("y", 55).text("Vrouw").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("text").attr("x", 120).attr("y", 85).text("Man").style("font-size", "15px").attr("alignment-baseline","middle")
 
     /////////////////////////////////////////////////////////
     ////////// Glow filter for some extra pizzazz ///////////
@@ -236,6 +244,8 @@ export class DepressionComponent implements OnInit {
       .style("stroke", "white")
       .style("stroke-width", "2px");
 
+    let _this = this;
+
     //Append the labels at each axis
     axis.append("text")
       .attr("class", "legend")
@@ -245,7 +255,23 @@ export class DepressionComponent implements OnInit {
       .attr("x", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice*i - Math.PI/2); })
       .attr("y", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice*i - Math.PI/2); })
       .text((d,i) => axes_labels[i])
-      .call(wrap, cfg.wrapWidth);
+      .call(wrap, cfg.wrapWidth)
+      .on('mouseover', function (d,i){
+        //Dim all blobs
+        return d3.select(this)
+          .transition()
+          .duration(200)
+          .style('font-size', "20px");
+      })
+      .on('mouseout', function(){
+        //Bring back all blobs
+        d3.select(this)
+          .transition()
+          .duration(200)
+          .style('font-size', "11px")
+      }).on("click", function(d, i) {
+        _this.show_new_figure(i)
+    });
 
     /////////////////////////////////////////////////////////
     ///////////// Draw the radar chart blobs ////////////////
