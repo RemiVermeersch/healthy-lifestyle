@@ -32,8 +32,8 @@ export class SatisfactionComponent implements OnInit {
                       }
 
     let margin = {top: 10, right: 10, bottom: 10, left: 10};
-    let width = window.innerWidth;
-    let height = window.innerHeight - 150;
+    let width = 1600;
+    let height = window.innerHeight - 300;
 
     let maleStats = {x: 90, y: height - 50, height: height - 50, width: width/10, color: "#96D6F7"}
     let femaleStats = {x: maleStats.x + maleStats.width * 1.25, y: height - 50, height: height - 50, width: width/10, color: "#FFA500"}

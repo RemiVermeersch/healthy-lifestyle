@@ -94,7 +94,7 @@ export class SelfPercievedHealthComponent implements OnInit {
   update_bar() {
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 400 - margin.top - margin.bottom;
 
     var x0 = d3.scaleBand().range([0,width-margin.left-margin.right]).padding(0.2);
     var x1 = d3.scaleBand().range([0,40]);
@@ -104,19 +104,19 @@ export class SelfPercievedHealthComponent implements OnInit {
     var xAxis = d3.axisBottom(x0).tickSize(0)
     var yAxis = d3.axisLeft(yScale);
 
-    let xDomain = ["very good","good","fair","bad","very bad"];
+    let xDomain = ["zeer goed","goed","in orde","slecht","zeer slecht"];
     let x1Domain = ["M","F"]
-    this.male_counts = {"very good":groups["very_good_M"].cnt,
-                       "good":groups["good_M"].cnt,
-                       "fair":groups["fair_M"].cnt,
-                       "bad":groups["bad_M"].cnt,
-                       "very bad":groups["very_bad_M"].cnt
+    this.male_counts = {"zeer goed":groups["very_good_M"].cnt,
+                       "goed":groups["good_M"].cnt,
+                       "in orde":groups["fair_M"].cnt,
+                       "slecht":groups["bad_M"].cnt,
+                       "zeer slecht":groups["very_bad_M"].cnt
                       };
-    this.female_counts = {"very good":groups["very_good_F"].cnt,
-                      "good":groups["good_F"].cnt,
-                      "fair":groups["fair_F"].cnt,
-                      "bad":groups["bad_F"].cnt,
-                      "very bad":groups["very_bad_F"].cnt
+    this.female_counts = {"zeer goed":groups["very_good_F"].cnt,
+                      "goed":groups["good_F"].cnt,
+                      "in orde":groups["fair_F"].cnt,
+                      "slecht":groups["bad_F"].cnt,
+                      "zeer slecht":groups["very_bad_F"].cnt
                      };
     x0.domain(xDomain);
     x1.domain(x1Domain);
@@ -280,7 +280,7 @@ export class SelfPercievedHealthComponent implements OnInit {
   createBarChart() {
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 400 - margin.top - margin.bottom;
 
     var x0 = d3.scaleBand().range([0,width-margin.left-margin.right]).padding(0.2);
     var x1 = d3.scaleBand().range([0,40]);
@@ -290,19 +290,19 @@ export class SelfPercievedHealthComponent implements OnInit {
     var xAxis = d3.axisBottom(x0).tickSize(0)
     var yAxis = d3.axisLeft(yScale);
 
-    let xDomain = ["very good","good","fair","bad","very bad"];
+    let xDomain = ["zeer goed","goed","in orde","slecht","zeer slecht"];
     let x1Domain = ["M","F"]
-    this.male_counts = {"very good":groups["very_good_M"].cnt,
-                       "good":groups["good_M"].cnt,
-                       "fair":groups["fair_M"].cnt,
-                       "bad":groups["bad_M"].cnt,
-                       "very bad":groups["very_bad_M"].cnt
+    this.male_counts = {"zeer goed":groups["very_good_M"].cnt,
+                       "goed":groups["good_M"].cnt,
+                       "in orde":groups["fair_M"].cnt,
+                       "slecht":groups["bad_M"].cnt,
+                       "zeer slecht":groups["very_bad_M"].cnt
                       };
-    this.female_counts = {"very good":groups["very_good_F"].cnt,
-                      "good":groups["good_F"].cnt,
-                      "fair":groups["fair_F"].cnt,
-                      "bad":groups["bad_F"].cnt,
-                      "very bad":groups["very_bad_F"].cnt
+    this.female_counts = {"zeer goed":groups["very_good_F"].cnt,
+                      "goed":groups["good_F"].cnt,
+                      "in orde":groups["fair_F"].cnt,
+                      "slecht":groups["bad_F"].cnt,
+                      "zeer slecht":groups["very_bad_F"].cnt
                      };
     x0.domain(xDomain);
     x1.domain(x1Domain);
@@ -354,7 +354,7 @@ export class SelfPercievedHealthComponent implements OnInit {
       .attr("class","bar1")
       .attr("data-val", d => d)
       .attr("x", (d:any) => { return x1("M")+45; })
-      .style("fill", "#F7D4E0")
+      .style("fill", "#FFA500")
       .attr("y", (d)=>(yScale(d)+totalMargin))
       .attr("height", (d:any) =>  height-totalMargin-yScale(d))
       .on("mouseover", d => tip.show(d))
@@ -425,12 +425,12 @@ export class SelfPercievedHealthComponent implements OnInit {
 
     //male & female labels
     this.svg.selectAll(".yAxis")
-      .data(["Male","Female"])
+      .data(["Mannen","Vrouwen"])
       .join("text")
       .attr("class",".yAxis")
       .attr("text-anchor", "middle")
       .attr("x", d => 20)
-      .attr("y", d => d=="Male"?(height+30)/3:(height+130)/3*2)
+      .attr("y", d => d=="Mannen"?(height+10)/3:(height+100)/3*2)
       .text(d => d);  
 
             
@@ -556,7 +556,7 @@ export class SelfPercievedHealthComponent implements OnInit {
           group: groupName,
           vx:0,
           vy:0,
-          color: filtered[i].sex == "M"?"#96D6F7":"#F7D4E0",
+          color: filtered[i].sex == "M"?"#96D6F7":"#FFA500",
           sex: filtered[i].sex
         }
         this.nodes = this.nodes.concat(n);
@@ -576,17 +576,17 @@ export class SelfPercievedHealthComponent implements OnInit {
 
 }
 
-let width = 1000;
-let height = 400;
+let width = 800;
+let height = 350;
 let pad_left = 200;
 let y_offset = 100;
 
 let groups = {
-  "very_good_M": { x: width/6*0+pad_left, y:y_offset, cnt: 0, fullname: "very good" },
-  "good_M": { x: width/6*1+pad_left, y:y_offset, cnt: 0, fullname: "good" },
-  "fair_M": { x: width/6*2+pad_left, y:y_offset, cnt: 0, fullname: "fair" },
-  "bad_M": { x: width/6*3+pad_left, y:y_offset, cnt: 0, fullname: "bad" },
-  "very_bad_M": { x: width/6*4+pad_left, y:y_offset, cnt: 0, fullname: "very bad" },
+  "very_good_M": { x: width/6*0+pad_left, y:y_offset, cnt: 0, fullname: "Heel goed" },
+  "good_M": { x: width/6*1+pad_left, y:y_offset, cnt: 0, fullname: "goed" },
+  "fair_M": { x: width/6*2+pad_left, y:y_offset, cnt: 0, fullname: "in orde" },
+  "bad_M": { x: width/6*3+pad_left, y:y_offset, cnt: 0, fullname: "slecht" },
+  "very_bad_M": { x: width/6*4+pad_left, y:y_offset, cnt: 0, fullname: "zeer slecht" },
   "very_good_F": { x: width/6*0+pad_left, y:y_offset+height/2, cnt: 0, fullname: "" },
   "good_F": { x: width/6*1+pad_left, y:y_offset+height/2, cnt: 0, fullname: "" },
   "fair_F": { x: width/6*2+pad_left, y:y_offset+height/2, cnt: 0, fullname: "" },
