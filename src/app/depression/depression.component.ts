@@ -135,8 +135,6 @@ export class DepressionComponent implements OnInit {
 
     let arr1 = data[0].map(function(i, j){return parseFloat(i.v)})
     let arr2 = data[1].map(function(i, j){return parseFloat(i.v)})
-    console.log(arr1)
-    console.log(arr2)
     var max1 = arr1.reduce(function(a, b) {
       return Math.max(a, b);
     }, -Infinity);
@@ -144,8 +142,6 @@ export class DepressionComponent implements OnInit {
       return Math.max(a, b);
     }, -Infinity);
     let maxValue = Math.max(max1, max2)
-    console.log(maxValue)
-  //  let maxValua = Math.max([Math.max(data[0].map(function(i, j){return i.v})), Math.max(data[1].map(function(i, j){return i.v}))])
 
 
     let allAxis = (data[0].map(function(i, j){return i.axis})),	//Names of each axis
@@ -195,6 +191,13 @@ export class DepressionComponent implements OnInit {
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .text("Aantal mensen met depressieve symptomen");
+    } else {
+      svg.append("text")
+        .attr("x", 300)
+        .attr("y", 700)
+        .attr("text-anchor", "middle")
+        .style("font-size", "11px")
+        .text("Klik op de leeftijden voor meer informatie");
     }
 
     /////////////////////////////////////////////////////////
@@ -300,7 +303,7 @@ export class DepressionComponent implements OnInit {
     /////////////////////////////////////////////////////////
 
     //The radial line function
-    var radarLine = d3.lineRadial()
+    var radarLine = d3.lineRadial().curve(d3.curveCardinalClosed)
       .radius((d:any) => rScale(d.v))
       .angle(function(d,i) {	return i*angleSlice; });
 
@@ -319,7 +322,7 @@ export class DepressionComponent implements OnInit {
       .style("fill-opacity", cfg.opacityArea)
       .on('mouseover', function (d,i){
         //Dim all blobs
-        d3.selectAll(".radarArea")
+        d3.select(id).selectAll(".radarArea")
           .transition().duration(200)
           .style("fill-opacity", 0.1);
         //Bring back the hovered over blob
@@ -405,7 +408,7 @@ export class DepressionComponent implements OnInit {
       .data(function(d:any,i) { return d; })
       .enter().append("circle")
       .attr("class", "radarInvisibleCircle")
-      .attr("r", cfg.dotRadius*1.5)
+      .attr("r", cfg.dotRadius*3)
       .attr("cx", function(d:any,i){ return rScale(d.v) * Math.cos(angleSlice*i - Math.PI/2); })
       .attr("cy", function(d:any,i){ return rScale(d.v) * Math.sin(angleSlice*i - Math.PI/2); })
       .style("fill", "none")
