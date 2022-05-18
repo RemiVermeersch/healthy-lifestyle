@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { Options } from '@angular-slider/ngx-slider';
-import { temporaryAllocator } from '@angular/compiler/src/render3/view/util';
 
 @Component({
   selector: 'app-self-percieved-health',
@@ -14,6 +13,10 @@ export class SelfPercievedHealthComponent implements OnInit {
   padding = 1;
   cluster_padding = 5;
   pad_left = 200;
+
+  male_counts;
+  female_counts;
+  barchart;
 
   ageFilter="Y16-24";
   
@@ -37,6 +40,23 @@ export class SelfPercievedHealthComponent implements OnInit {
   data;
   svg;
 
+  clickBubble(){
+    document.getElementById("chart").classList.add("visible");
+    document.getElementById("chart").classList.remove("invisible");
+
+    document.getElementById("bar_chart").classList.add("invisible");
+    document.getElementById("bar_chart").classList.remove("visible");
+
+  }
+
+  clickBar(){
+    document.getElementById("chart").classList.add("invisible");
+    document.getElementById("chart").classList.remove("visible");
+
+    document.getElementById("bar_chart").classList.add("visible");
+    document.getElementById("bar_chart").classList.remove("invisible");
+  }
+
   age_changed(){
     let prev_filter = this.ageFilter;
     if(this.value==1)
@@ -52,8 +72,83 @@ export class SelfPercievedHealthComponent implements OnInit {
     if(this.value==6)
       this.ageFilter = "Y65-74";
 
-    this.update_graph(prev_filter);  
+    this.update_graph(prev_filter);
+
+    this.male_counts = {"very good":groups["very_good_M"].cnt,
+      "good":groups["good_M"].cnt,
+      "fair":groups["fair_M"].cnt,
+      "bad":groups["bad_M"].cnt,
+      "very bad":groups["very_bad_M"].cnt
+    };
+    this.female_counts = {"very good":groups["very_good_F"].cnt,
+      "good":groups["good_F"].cnt,
+      "fair":groups["fair_F"].cnt,
+      "bad":groups["bad_F"].cnt,
+      "very bad":groups["very_bad_F"].cnt
+    };
+
+    this.update_bar();
   }
+
+  update_bar() {
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+    var x0 = d3.scaleBand().range([0,width-margin.left-margin.right]).padding(0.2);
+    var x1 = d3.scaleBand().range([0,40]);
+    var yScale = d3.scaleLinear().range([height - margin.top - margin.bottom, 0]);
+    yScale.domain([0,100]);
+
+    var xAxis = d3.axisBottom(x0).tickSize(0)
+    var yAxis = d3.axisLeft(yScale);
+
+    let xDomain = ["very good","good","fair","bad","very bad"];
+    let x1Domain = ["M","F"]
+    this.male_counts = {"very good":groups["very_good_M"].cnt,
+                       "good":groups["good_M"].cnt,
+                       "fair":groups["fair_M"].cnt,
+                       "bad":groups["bad_M"].cnt,
+                       "very bad":groups["very_bad_M"].cnt
+                      };
+    this.female_counts = {"very good":groups["very_good_F"].cnt,
+                      "good":groups["good_F"].cnt,
+                      "fair":groups["fair_F"].cnt,
+                      "bad":groups["bad_F"].cnt,
+                      "very bad":groups["very_bad_F"].cnt
+                     };
+    x0.domain(xDomain);
+    x1.domain(x1Domain);
+  
+    let totalMargin = margin.top+margin.bottom
+
+    var slice = this.barchart.selectAll("g.g");
+    
+    slice.selectAll(".bar1")
+      .data( x => [this.female_counts[x]])
+      .join("rect")
+      .transition()
+      .duration(1000)
+      .attr("width", 15)
+      .attr("class","bar1")
+      .attr("x", (d:any) => { return x1("M")+45; })
+      .style("fill", "#F7D4E0")
+      .attr("y", (d)=>(yScale(d)+totalMargin))
+      .attr("height", (d:any) =>  height-totalMargin-yScale(d))
+
+    slice.selectAll(".bar2")
+      .data( x => [this.male_counts[x]])
+      .join("rect")
+      .transition()
+      .duration(1000)
+      .attr("width", 15)
+      .attr("class","bar2")
+      .attr("x", (d:any) => { return x1("F")+45; })
+      .style("fill", "#96D6F7" )
+      .attr("y", (d)=>(yScale(d)+totalMargin))
+      .attr("height", (d:any) =>  height-totalMargin-yScale(d));
+  }
+  
 
   update_graph(old:string){
     let old_filtered = this.data.filter( x => x.age == old)
@@ -178,7 +273,91 @@ export class SelfPercievedHealthComponent implements OnInit {
       this.data = data;
       this.generate_people(data);
       this.createGraph();
+      this.createBarChart();
     })
+  }
+
+  createBarChart() {
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+    var x0 = d3.scaleBand().range([0,width-margin.left-margin.right]).padding(0.2);
+    var x1 = d3.scaleBand().range([0,40]);
+    var yScale = d3.scaleLinear().range([height - margin.top - margin.bottom, 0]);
+    yScale.domain([0,100]);
+
+    var xAxis = d3.axisBottom(x0).tickSize(0)
+    var yAxis = d3.axisLeft(yScale);
+
+    let xDomain = ["very good","good","fair","bad","very bad"];
+    let x1Domain = ["M","F"]
+    this.male_counts = {"very good":groups["very_good_M"].cnt,
+                       "good":groups["good_M"].cnt,
+                       "fair":groups["fair_M"].cnt,
+                       "bad":groups["bad_M"].cnt,
+                       "very bad":groups["very_bad_M"].cnt
+                      };
+    this.female_counts = {"very good":groups["very_good_F"].cnt,
+                      "good":groups["good_F"].cnt,
+                      "fair":groups["fair_F"].cnt,
+                      "bad":groups["bad_F"].cnt,
+                      "very bad":groups["very_bad_F"].cnt
+                     };
+    x0.domain(xDomain);
+    x1.domain(x1Domain);
+
+    this.barchart = d3.select('#bar_chart').append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+
+
+    this.barchart.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+    let totalMargin = margin.top+margin.bottom
+    this.barchart.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(0," + totalMargin + ")")
+      .call(yAxis)
+
+
+    var slice = this.barchart.selectAll(".slice")
+      .data(xDomain)
+      .enter()
+      .append("g")
+      .attr("class", "g")
+      .attr("transform",(d) => { return "translate(" + x0(d) + ",0)"; });
+
+    
+    slice.selectAll(".bar1")
+      .data( x => [this.female_counts[x]])
+      .join("rect")
+      .transition()
+      .duration(1000)
+      .attr("width", 15)
+      .attr("class","bar1")
+      .attr("x", (d:any) => { return x1("M")+45; })
+      .style("fill", "#F7D4E0")
+      .attr("y", (d)=>(yScale(d)+totalMargin))
+      .attr("height", (d:any) =>  height-totalMargin-yScale(d))
+
+    slice.selectAll(".bar2")
+      .data( x => [this.male_counts[x]])
+      .join("rect")
+      .transition()
+      .duration(1000)
+      .attr("width", 15)
+      .attr("class","bar2")
+      .attr("x", (d:any) => { return x1("F")+45; })
+      .style("fill", "#96D6F7" )
+      .attr("y", (d)=>(yScale(d)+totalMargin))
+      .attr("height", (d:any) =>  height-totalMargin-yScale(d));
+
   }
 
   createGraph(){
@@ -390,5 +569,6 @@ let groups = {
   "bad_F": { x: width/6*3+pad_left, y:y_offset+height/2, cnt: 0, fullname: "" },
   "very_bad_F": { x: width/6*4+pad_left, y:y_offset+height/2, cnt: 0, fullname: "" },
 };
+
 
 

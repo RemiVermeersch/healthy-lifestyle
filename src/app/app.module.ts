@@ -7,6 +7,8 @@ import { EconomyFinanceComponent } from './economy-finance/economy-finance.compo
 import { EconomyFinanceWealthComponent } from './economy-finance-wealth/economy-finance-wealth.component';
 import { SelfPercievedHealthComponent } from './self-percieved-health/self-percieved-health.component';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,8 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     BrowserModule,
     AngularFullpageModule,
     NgxSliderModule,
+    MatButtonToggleModule,
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
