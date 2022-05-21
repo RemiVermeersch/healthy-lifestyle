@@ -22,7 +22,7 @@ export class SatisfactionComponent implements OnInit {
     let subjectNames = {"TIMESAT": "Tijdsgebruik",
                         "COMSAT": "Pendelen",
                         "JOBSAT": "Job",
-                        "ACCSAT": "Accomodatie",
+                        "ACCSAT": "Accommodatie",
                         "FINSAT":  "Financieel",
                         "MEANLIFE": "Levensnut",
                         "RELSAT": "Relaties",
@@ -47,16 +47,6 @@ export class SatisfactionComponent implements OnInit {
         .attr("height", height)
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
-
-    // let text = svg.append("g").append("text").text(`Deze vraag was het uitgangspunt bij het opstellen van deze scroll-through. 
-    // Vertrekkende van \n de algmene tevredenheid bij de Belg, zal er eerst gekeken worden naar verschillende soorten tevredenheid.
-    //  Om vervolgens te bekijken wat deze tevredenheid al dan niet kan beïnvloeden, zullen enkele aspecten meer in detail gevisualiseerd worden. 
-    //  Zo zal in een eerste uitdieping het financiële aspect verder verwerkt worden. Daarnaast zullen mannen en vrouwen vergeleken worden op basis van hoe 
-    //  gezond ze zichzelf vinden. Tot slot wordt er nog een kijkje genomen naar de cijfers over depressieve symptomen.
-    //   Op deze manier is het hopelijk mogelijk nieuwe inzichten te geven over hoe het met de gemiddelde vrouwelijke en mannelijke Belg gesteld is.`)
-    //   .attr("x", 600)
-    //   .attr("y", 200)
-    //   .attr("width", 400)
 
 
     let mainFocus = svg.append("g")
