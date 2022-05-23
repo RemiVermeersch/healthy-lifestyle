@@ -7,20 +7,12 @@ import * as d3 from 'd3';
   styleUrls: ['./depression.component.less']
 })
 export class DepressionComponent implements OnInit {
-
-  radius = 5;
-  padding = 1;
-  cluster_padding = 5;
-  pad_left = 200;
   age_data;
 
   ages = ["Y15-24", "Y25-34", "Y35-44", "Y45-54", "Y55-64", "Y65-74", "Y_GE75"]
   ages_nl = ["15-24", "25-34", "35-44", "45-54", "55-64", "65-74", ">=75"]
   dipl_nl = ["lager onderwijs", "secundair onderwijs", "hoger onderwijs"]
-  fem_total = 9.6;
-  men_total = 7.2;
 
-  nodes;
   ngOnInit(): void {
 
     d3.csv("/assets/depression/depression_be.csv").then( (data) => {
@@ -111,6 +103,7 @@ export class DepressionComponent implements OnInit {
     this.radarChart("#diploma_chart", diploma_data, radarChartOptions, this.dipl_nl, title)
   }
 
+  // based on http://bl.ocks.org/nbremer/21746a9668ffdf6d8242
   radarChart(id, data, options, axes_labels, title) {
     let cfg = {
       w: 600,				//Width of the circle
@@ -132,8 +125,8 @@ export class DepressionComponent implements OnInit {
     if('undefined' !== typeof options){
       for(var i in options){
         if('undefined' !== typeof options[i]){ cfg[i] = options[i]; }
-      }//for i
-    }//if
+      }
+    }
 
     let arr1 = data[0].map(function(i, j){return parseFloat(i.v)})
     let arr2 = data[1].map(function(i, j){return parseFloat(i.v)})
@@ -153,11 +146,8 @@ export class DepressionComponent implements OnInit {
       FormatComma = d3.format(".1%"),
       angleSlice = Math.PI * 2 / total;		//The width in radians of each "slice"
 
-    /////////////////////////////////////////////////////////
-    //////////// Create the container SVG and g /////////////
-    /////////////////////////////////////////////////////////
 
-    //Remove whatever chart with the same id/class was present before
+    //Remove whatever chart with the same id/class was present before, except for the static age chart
     if (id != "#age_chart") {
       d3.select(id).select("svg").remove();
     }
@@ -186,6 +176,7 @@ export class DepressionComponent implements OnInit {
       .style("font-size", "16px")
       .text(title);
 
+    // subtitles
     if (id == "#diploma_chart") {
       svg.append("text")
         .attr("x", 300)
@@ -201,10 +192,6 @@ export class DepressionComponent implements OnInit {
         .style("font-size", "11px")
         .text("Klik op de leeftijden voor meer informatie");
     }
-
-    /////////////////////////////////////////////////////////
-    ////////// Glow filter for some extra pizzazz ///////////
-    /////////////////////////////////////////////////////////
 
     //Filter for the outside glow
     var filter = g.append('defs').append('filter').attr('id','glow'),
